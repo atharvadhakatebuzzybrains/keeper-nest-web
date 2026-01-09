@@ -1,68 +1,148 @@
-:root {
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
-
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-a {
-  font-weight: 500;
-  color: #646cff;
-  text-decoration: inherit;
-}
-a:hover {
-  color: #535bf2;
-}
-
-body {
-  margin: 0;
-  display: flex;
-  place-items: center;
-  min-width: 320px;
-  min-height: 100vh;
-}
-
-h1 {
-  font-size: 3.2em;
-  line-height: 1.1;
-}
-
-button {
-  border-radius: 8px;
-  border: 1px solid transparent;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
-  font-weight: 500;
-  font-family: inherit;
-  background-color: #1a1a1a;
-  cursor: pointer;
-  transition: border-color 0.25s;
-}
-button:hover {
-  border-color: #646cff;
-}
-button:focus,
-button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
-}
-
-@media (prefers-color-scheme: light) {
+@layer base {
   :root {
-    color: #213547;
-    background-color: #ffffff;
+    --background: 0 0% 100%;
+    --foreground: 20 14.3% 4.1%;
+    --card: 0 0% 100%;
+    --card-foreground: 20 14.3% 4.1%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 20 14.3% 4.1%;
+    --primary: 221 83% 53%; /* Changed from brown to blue (#3b82f6) */
+    --primary-foreground: 0 0% 100%;
+    --secondary: 220 14.3% 95.9%;
+    --secondary-foreground: 221 83% 53%;
+    --muted: 220 14.3% 95.9%;
+    --muted-foreground: 220 8.9% 46.1%;
+    --accent: 220 14.3% 95.9%;
+    --accent-foreground: 221 83% 53%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 220 13% 91%;
+    --input: 220 13% 91%;
+    --ring: 221 83% 53%;
+    --chart-1: 221 83% 53%;
+    --chart-2: 213 94% 68%;
+    --chart-3: 199 89% 48%;
+    --chart-4: 187 85% 53%;
+    --chart-5: 217 91% 60%;
+    --radius: 0.5rem
   }
-  a:hover {
-    color: #747bff;
+  .dark {
+    --background: 222 47% 11%;
+    --foreground: 210 40% 98%;
+    --card: 222 47% 11%;
+    --card-foreground: 210 40% 98%;
+    --popover: 222 47% 11%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 217 91% 60%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 217 33% 17%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 217 33% 17%;
+    --muted-foreground: 215 20.2% 65.1%;
+    --accent: 217 33% 17%;
+    --accent-foreground: 210 40% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 217 33% 17%;
+    --input: 217 33% 17%;
+    --ring: 213 94% 68%;
+    --chart-1: 217 91% 60%;
+    --chart-2: 213 94% 68%;
+    --chart-3: 199 89% 48%;
+    --chart-4: 187 85% 53%;
+    --chart-5: 173 80% 40%;
   }
-  button {
-    background-color: #f9f9f9;
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+/* Blue theme custom classes */
+@layer components {
+  .bg-blue-theme {
+    background-color: #3b82f6;
+  }
+  
+  .text-blue-theme {
+    color: #3b82f6;
+  }
+  
+  .border-blue-theme {
+    border-color: #3b82f6;
+  }
+  
+  .hover\:bg-blue-theme:hover {
+    background-color: #3b82f6;
+  }
+  
+  .hover\:text-blue-theme:hover {
+    color: #3b82f6;
+  }
+  
+  /* Gradient backgrounds */
+  .bg-gradient-blue {
+    background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+  }
+  
+  /* Custom button variants */
+  .btn-blue {
+    @apply bg-primary text-primary-foreground hover:bg-primary/90 font-medium transition-colors;
+  }
+  
+  .btn-blue-outline {
+    @apply border-2 border-primary text-primary hover:bg-primary hover:text-white font-medium transition-colors;
+  }
+  
+  /* Card with blue accent */
+  .card-blue-accent {
+    @apply relative overflow-hidden;
+  }
+  
+  .card-blue-accent::before {
+    content: '';
+    @apply absolute left-0 top-0 h-full w-1 bg-primary;
+  }
+}
+
+/* Custom scrollbar with blue theme */
+@layer utilities {
+  .scrollbar-blue::-webkit-scrollbar {
+    width: 8px;
+  }
+  
+  .scrollbar-blue::-webkit-scrollbar-track {
+    @apply bg-gray-100;
+  }
+  
+  .scrollbar-blue::-webkit-scrollbar-thumb {
+    @apply bg-primary/30 rounded-full;
+  }
+  
+  .scrollbar-blue::-webkit-scrollbar-thumb:hover {
+    @apply bg-primary/50;
+  }
+  
+  /* Animation utilities */
+  .animate-pulse-blue {
+    animation: pulse-blue 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+  
+  @keyframes pulse-blue {
+    0%, 100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.5;
+    }
   }
 }
