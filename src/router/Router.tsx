@@ -1,15 +1,14 @@
 import { Routes, Route } from "react-router-dom";
-import AdminRouter from './AdminRouter';
-import EmployeeRouter from "./EmployeeRouter";
+import DashboardRouter from "./DashboardRouter";
+import NotFound from "../components/NotFound";
+import InitialRouter from "./InitialRouter";
 export default function Router() {
   return (
     <Routes>
-      <Route path="/admin/*" element={<AdminRouter />} />
-      <Route path="/employee/*" element={<EmployeeRouter />} />
+      <Route path="/dashboard/*" element={<DashboardRouter />} />
+      <Route path="/*" element={<InitialRouter />} />
+      <Route path="*" element={<NotFound />} />
 
-      {/* <Route path="/Login" element={<Login />} />
-      <Route path="/Signup" element={<Signup />} />
-      <Route path="/Profile" element={<Profile />} /> */}
     </Routes>
   );
 }
