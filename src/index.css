@@ -10,7 +10,8 @@
     --card-foreground: 20 14.3% 4.1%;
     --popover: 0 0% 100%;
     --popover-foreground: 20 14.3% 4.1%;
-    --primary: 221 83% 53%; /* Changed from brown to blue (#3b82f6) */
+    --primary: 221 83% 53%;
+    /* Changed from brown to blue (#3b82f6) */
     --primary-foreground: 0 0% 100%;
     --secondary: 220 14.3% 95.9%;
     --secondary-foreground: 221 83% 53%;
@@ -30,6 +31,7 @@
     --chart-5: 217 91% 60%;
     --radius: 0.5rem
   }
+
   .dark {
     --background: 222 47% 11%;
     --foreground: 210 40% 98%;
@@ -62,6 +64,7 @@
   * {
     @apply border-border;
   }
+
   body {
     @apply bg-background text-foreground;
   }
@@ -72,42 +75,42 @@
   .bg-blue-theme {
     background-color: #3b82f6;
   }
-  
+
   .text-blue-theme {
     color: #3b82f6;
   }
-  
+
   .border-blue-theme {
     border-color: #3b82f6;
   }
-  
+
   .hover\:bg-blue-theme:hover {
     background-color: #3b82f6;
   }
-  
+
   .hover\:text-blue-theme:hover {
     color: #3b82f6;
   }
-  
+
   /* Gradient backgrounds */
   .bg-gradient-blue {
     background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
   }
-  
+
   /* Custom button variants */
   .btn-blue {
     @apply bg-primary text-primary-foreground hover:bg-primary/90 font-medium transition-colors;
   }
-  
+
   .btn-blue-outline {
     @apply border-2 border-primary text-primary hover:bg-primary hover:text-white font-medium transition-colors;
   }
-  
+
   /* Card with blue accent */
   .card-blue-accent {
     @apply relative overflow-hidden;
   }
-  
+
   .card-blue-accent::before {
     content: '';
     @apply absolute left-0 top-0 h-full w-1 bg-primary;
@@ -119,30 +122,39 @@
   .scrollbar-blue::-webkit-scrollbar {
     width: 8px;
   }
-  
+
   .scrollbar-blue::-webkit-scrollbar-track {
     @apply bg-gray-100;
   }
-  
+
   .scrollbar-blue::-webkit-scrollbar-thumb {
     @apply bg-primary/30 rounded-full;
   }
-  
+
   .scrollbar-blue::-webkit-scrollbar-thumb:hover {
     @apply bg-primary/50;
   }
-  
+
   /* Animation utilities */
   .animate-pulse-blue {
     animation: pulse-blue 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
   }
-  
+
   @keyframes pulse-blue {
-    0%, 100% {
+
+    0%,
+    100% {
       opacity: 1;
     }
+
     50% {
       opacity: 0.5;
     }
+  }
+
+  @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap');
+
+  body {
+    font-family: 'Roboto', sans-serif;
   }
 }
