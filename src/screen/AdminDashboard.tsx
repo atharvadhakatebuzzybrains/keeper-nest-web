@@ -227,68 +227,42 @@ export default function AdminDashboard() {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          {quickActions.map((action) => {
-            const Icon = action.icon;
+        <div className="mb-6">
 
-            return (
-              <Button
-                key={action.title}
-                variant="outline"
-                className="
-          h-auto p-3 sm:p-4
-          flex items-start gap-3 sm:gap-4
-          justify-start
-          w-full
-          overflow-hidden
-          hover:shadow-md transition-shadow
-        "
-        onClick={() => navigate(`/dashboard/${action.href}`)}
-              >
-                {/* Icon */}
-                <div
-                  className={`
-            ${action.color}
-            h-9 w-9 sm:h-10 sm:w-10
-            rounded-lg
-            flex items-center justify-center
-            shrink-0
-          `}
-                >
-                  <Icon className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
-                </div>
+          <Card>
+            <CardHeader>
+              <CardTitle>Quick Actions</CardTitle>
+              <CardDescription>Common tasks to get you started</CardDescription>
+            </CardHeader>
 
-                <div className="flex-1 min-w-0 text-left">
-                  <div
-                    className="
-              font-semibold
-              text-sm sm:text-base
-              leading-snug sm:leading-normal
-              break-words
-              line-clamp-1
-            "
-                  >
-                    {action.title}
-                  </div>
+            <CardContent className="p-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {quickActions.map((action) => {
+                  const Icon = action.icon;
 
-                  <div
-                    className="
-              text-xs sm:text-sm
-              text-gray-500
-              leading-snug
-              break-words
-              line-clamp-2
-            "
-                  >
-                    {action.description}
-                  </div>
-                </div>
+                  return (
+                    <button
+                      key={action.title}
+                      onClick={() => navigate(`/dashboard${action.href}`)}
+                      className="w-full text-left p-3 sm:p-4 flex items-start gap-4 rounded-lg border border-gray-100 hover:shadow-md hover:bg-gray-50 transition-colors"
+                      aria-label={action.title}
+                    >
+                      <div className={`${action.color} h-9 w-9 sm:h-10 sm:w-10 rounded-lg flex items-center justify-center shrink-0`}>
+                        <Icon className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
+                      </div>
 
-                {/* Arrow */}
-                <ChevronRight className="h-4 w-4 text-gray-400 shrink-0 self-center" />
-              </Button>
-            );
-          })}
+                      <div className="flex-1 min-w-0">
+                        <div className="font-semibold text-sm sm:text-base line-clamp-1">{action.title}</div>
+                        <div className="text-xs sm:text-sm text-gray-500 line-clamp-2">{action.description}</div>
+                      </div>
+
+                      <ChevronRight className="h-4 w-4 text-gray-400 self-center" />
+                    </button>
+                  );
+                })}
+              </div>
+            </CardContent>
+          </Card>
         </div>
 
       </div>

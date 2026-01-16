@@ -13,6 +13,7 @@ import EmployeeList from '../components/adminComponents/EmployeeList';
 import AddEmployee from '../components/adminComponents/AddEmployee';
 import AddAssets from '../components/adminComponents/AddAssets';
 import ViewAssets from '../components/adminComponents/ViewAssets';
+import AssetDetails from '../components/adminComponents/AssetDetails';
 
 
 export default function DashboardRouter() {
@@ -87,8 +88,9 @@ export default function DashboardRouter() {
                     <Route path="profile" element={<Profile />} />
                     <Route path='addEmployee' element={<AddEmployee/>} />
                     <Route path='addAssets' element={<AddAssets/>} />
-                    <Route path='viewAssets/*' element={<ViewAssets/>} />
-                    <Route path='employees/*' element={<EmployeeList/>} />
+                    <Route path='viewAssets' element={<ViewAssets/>} />
+                    <Route path='employees' element={<EmployeeList/>} />
+                    <Route path='viewAssets/assetDetails/:assetId' element={<AssetDetails/>} />
                     <Route path="*" element={<NotFound />} />
                 </>
             ) : role === 'employee' ? (
