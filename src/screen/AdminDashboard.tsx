@@ -129,23 +129,25 @@ export default function AdminDashboard() {
   }, [navigate]);
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gradient-to-b from-blue-50/30 to-white">
       <Navbar name={name} email={email} role="admin" />
 
-      <div className="container mx-auto px-6 py-8">
+      <div className="container mx-auto px-4 sm:px-6 py-8">
         <div className="mb-8">
-          <Card className="border-0 shadow-lg bg-gradient-to-r from-[#3b82f6] to-blue-600 text-white">
-            <CardContent className="p-8">
+          <Card className="border-0 shadow-lg bg-gradient-to-r from-[#3b82f6] to-blue-600 text-white overflow-hidden">
+            <CardContent className="p-4 sm:p-6 md:p-8">
               <div className="flex items-center justify-between">
                 <div>
-                  <h2 className="text-3xl font-medium mb-3">Hello, <span className="font-bold">{name}!</span></h2>
-                  <p className="text-blue-100 text-lg">
+                  <h2 className="text-lg sm:text-xl md:text-3xl font-medium mb-1 sm:mb-2 md:mb-3">
+                    Hello, <span className="font-bold">{name}!</span>
+                  </h2>
+                  <p className="text-blue-100 text-xs sm:text-sm md:text-lg">
                     Welcome to KeeperNest — Where asset tracking meets workforce optimization
                   </p>
                 </div>
                 <div className="hidden md:block">
-                  <div className="h-28 w-28 rounded-full bg-white/10 flex items-center justify-center border-2 border-white/20">
-                    <FaCircleUser className="h-20 w-20 text-white" />
+                  <div className="h-20 w-20 lg:h-28 lg:w-28 rounded-full bg-white/10 flex items-center justify-center border-2 border-white/20">
+                    <FaCircleUser className="h-12 w-12 lg:h-20 lg:w-20 text-white" />
                   </div>
                 </div>
               </div>
@@ -155,7 +157,7 @@ export default function AdminDashboard() {
 
         <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 mb-8">
           <div className="lg:col-span-3 grid grid-cols-1 sm:grid-cols-2 gap-6">
-            <Card>
+            <Card className="border border-blue-100 bg-white shadow-sm hover:shadow-md transition-shadow duration-200">
               <CardContent className="pt-6">
                 <div className="flex items-center justify-between">
                   <div>
@@ -169,7 +171,7 @@ export default function AdminDashboard() {
               </CardContent>
             </Card>
 
-            <Card>
+            <Card className="border border-green-100 bg-white shadow-sm hover:shadow-md transition-shadow duration-200">
               <CardContent className="pt-6">
                 <div className="flex items-center justify-between">
                   <div>
@@ -183,7 +185,7 @@ export default function AdminDashboard() {
               </CardContent>
             </Card>
 
-            <Card>
+            <Card className="border border-amber-100 bg-white shadow-sm hover:shadow-md transition-shadow duration-200">
               <CardContent className="pt-6">
                 <div className="flex items-center justify-between">
                   <div>
@@ -197,7 +199,7 @@ export default function AdminDashboard() {
               </CardContent>
             </Card>
 
-            <Card>
+            <Card className="border border-purple-100 bg-white shadow-sm hover:shadow-md transition-shadow duration-200">
               <CardContent className="pt-6">
                 <div className="flex items-center justify-between">
                   <div>
@@ -212,7 +214,7 @@ export default function AdminDashboard() {
             </Card>
           </div>
           <div className="lg:col-span-2">
-            <Card className="h-full">
+            <Card className="h-full border border-blue-100 bg-white shadow-sm hover:shadow-md transition-shadow duration-200">
               <CardContent className="pt-6 h-full flex flex-col items-center justify-center text-center">
                 <div className="h-20 w-20 rounded-2xl bg-gradient-to-br from-indigo-100 to-purple-100 flex items-center justify-center mb-6">
                   <Users className="h-10 w-10 text-indigo-600" />
@@ -228,10 +230,9 @@ export default function AdminDashboard() {
         </div>
 
         <div className="mb-6">
-
-          <Card>
-            <CardHeader>
-              <CardTitle>Quick Actions</CardTitle>
+          <Card className="border border-blue-100 bg-white shadow-sm">
+            <CardHeader className="pb-3">
+              <CardTitle className="text-xl">Quick Actions</CardTitle>
               <CardDescription>Common tasks to get you started</CardDescription>
             </CardHeader>
 
@@ -244,7 +245,7 @@ export default function AdminDashboard() {
                     <button
                       key={action.title}
                       onClick={() => navigate(`/dashboard${action.href}`)}
-                      className="w-full text-left p-3 sm:p-4 flex items-start gap-4 rounded-lg border border-gray-100 hover:shadow-md hover:bg-gray-50 transition-colors"
+                      className="w-full text-left p-3 sm:p-4 flex items-start gap-4 rounded-lg border border-gray-100 hover:shadow-md hover:bg-gray-50 transition-all duration-200 hover:-translate-y-0.5"
                       aria-label={action.title}
                     >
                       <div className={`${action.color} h-9 w-9 sm:h-10 sm:w-10 rounded-lg flex items-center justify-center shrink-0`}>
@@ -264,7 +265,6 @@ export default function AdminDashboard() {
             </CardContent>
           </Card>
         </div>
-
       </div>
     </div>
   );

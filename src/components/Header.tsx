@@ -11,7 +11,7 @@ interface HeaderProps {
   showSearch?: boolean;
   searchPlaceholder?: string;
   onSearchChange?: (searchTerm: string) => void;
-  searchValue?: string; // Controlled search value
+  searchValue?: string; 
   searchDebounce?: number;
   rightContent?: React.ReactNode;
 }

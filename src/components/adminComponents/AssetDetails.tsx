@@ -1,7 +1,8 @@
 import React from 'react'
+import Header from '../Header'
 
 export default function AssetDetails() {
   return (
-    <div>AssetDetails</div>
+    <Header title="Asset Management" subtitle='Manage asset assignments and details' />
   )
 }

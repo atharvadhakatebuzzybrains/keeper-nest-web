@@ -17,7 +17,6 @@ const DynamicTable = ({
   hoverable = true,
 }) => {
   
-  // Render cell content
   const renderCell = (item, column) => {
     const { key, render, align = 'left' } = column;
     
@@ -29,7 +28,6 @@ const DynamicTable = ({
     return value ?? '-';
   };
 
-  // Get column style with width
   const getColumnStyle = (index) => {
     const width = columnWidths[index] || columns[index]?.width;
     return width ? { 
@@ -66,14 +64,12 @@ const DynamicTable = ({
 
   return (
     <div className={`bg-white rounded-lg border border-gray-200 shadow-sm ${className}`}>
-      {/* Title */}
       {title && (
         <div className="px-4 sm:px-6 py-3 border-b border-gray-200">
           <h3 className="text-base sm:text-lg font-semibold text-gray-800 truncate">{title}</h3>
         </div>
       )}
       
-      {/* Table Container with Horizontal Scroll */}
       <div className="overflow-x-auto">
         <div className="min-w-max inline-block align-middle w-full">
           <table className="w-full border-collapse">

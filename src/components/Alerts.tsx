@@ -66,36 +66,36 @@ export const CustomNotification = ({ title, description, isOpen, onClose, type =
   const Icon = styles.icon;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm animate-in fade-in duration-200">
-      <div className="bg-white rounded-xl shadow-lg w-full max-w-sm mx-4 overflow-hidden transform transition-all scale-100 animate-in zoom-in-95 duration-200">
-        <div className="p-5">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm animate-in fade-in duration-200 p-4">
+      <div className="bg-white rounded-lg sm:rounded-xl shadow-lg w-full max-w-xs sm:max-w-sm mx-auto overflow-hidden transform transition-all scale-100 animate-in zoom-in-95 duration-200">
+        <div className="p-4 sm:p-5">
           <div className="flex items-start justify-between">
-            <div className="flex items-center space-x-3">
-              <div className={`${styles.iconBg} p-2 rounded-full`}>
-                <Icon className={`h-5 w-5 ${styles.text}`} />
+            <div className="flex items-center space-x-2 sm:space-x-3">
+              <div className={`${styles.iconBg} p-1.5 sm:p-2 rounded-full`}>
+                <Icon className={`h-4 w-4 sm:h-5 sm:w-5 ${styles.text}`} />
               </div>
-              <h3 className="text-base font-semibold text-gray-900">{title}</h3>
+              <h3 className="text-sm sm:text-base font-semibold text-gray-900">{title}</h3>
             </div>
             <button
               onClick={onClose}
               className="text-gray-400 hover:text-gray-500 transition-colors"
             >
-              <X size={18} />
+              <X size={16} className="sm:w-5 sm:h-5 w-4 h-4" />
             </button>
           </div>
 
-          <div className="mt-3">
-            <p className="text-sm text-gray-600 leading-relaxed">
+          <div className="mt-2 sm:mt-3">
+            <p className="text-xs sm:text-sm text-gray-600 leading-relaxed">
               {description}
             </p>
           </div>
 
-          <div className="mt-5 flex justify-end">
+          <div className="mt-4 sm:mt-5 flex justify-end">
             <Button
               onClick={onClose}
-              className={`${styles.button} text-white px-5 py-1.5 rounded-lg transition-all duration-200 flex items-center space-x-2 text-sm`}
+              className={`${styles.button} text-white px-4 py-1 sm:px-5 sm:py-1.5 rounded-lg transition-all duration-200 flex items-center space-x-1.5 sm:space-x-2 text-xs sm:text-sm`}
             >
-              <CheckCircle2 size={16} />
+              <CheckCircle2 size={14} className="sm:w-4 sm:h-4 w-3.5 h-3.5" />
               <span>OK</span>
             </Button>
           </div>
@@ -132,19 +132,19 @@ export const Snackbar = ({ message, isOpen, onClose, duration = 3000, type = 'in
   const Icon = styles.icon;
 
   return (
-    <div className="fixed bottom-4 right-4 z-50 animate-in slide-in-from-bottom-5 duration-300">
-      <div className={`${styles.snackbarBg} text-gray-800 px-4 py-3 rounded-lg shadow-lg flex items-center space-x-3 min-w-[260px] border ${styles.border}`}>
-        <div className={`${styles.iconBg} p-1.5 rounded-full`}>
-          <Icon size={16} className={styles.snackbarIcon} />
+    <div className="fixed bottom-3 left-3 right-3 sm:bottom-4 sm:right-4 sm:left-auto z-50 animate-in slide-in-from-bottom-5 duration-300">
+      <div className={`${styles.snackbarBg} text-gray-800 px-3 py-2.5 sm:px-4 sm:py-3 rounded-lg shadow-lg flex items-center space-x-2 sm:space-x-3 min-w-0 sm:min-w-[260px] border ${styles.border}`}>
+        <div className={`${styles.iconBg} p-1 sm:p-1.5 rounded-full flex-shrink-0`}>
+          <Icon size={14} className={`sm:w-4 sm:h-4 w-3.5 h-3.5 ${styles.snackbarIcon}`} />
         </div>
-        <div className="flex-1">
-          <p className="text-sm font-medium">{message}</p>
+        <div className="flex-1 min-w-0">
+          <p className="text-xs sm:text-sm font-medium truncate sm:whitespace-normal">{message}</p>
         </div>
         <button
           onClick={onClose}
-          className="text-gray-400 hover:text-gray-600 transition-colors"
+          className="text-gray-400 hover:text-gray-600 transition-colors flex-shrink-0"
         >
-          <X size={16} />
+          <X size={14} className="sm:w-4 sm:h-4 w-3.5 h-3.5" />
         </button>
       </div>
     </div>
@@ -217,47 +217,79 @@ const Alerts = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 p-8 flex flex-col items-center justify-center space-y-12">
-      <div className="text-center space-y-4">
-        <h1 className="text-4xl font-bold text-gray-900 tracking-tight">System Notification System</h1>
-        <p className="text-gray-500 max-w-lg mx-auto">
+    <div className="min-h-screen bg-gray-50 p-4 sm:p-6 md:p-8 flex flex-col items-center justify-center space-y-6 sm:space-y-8 md:space-y-12">
+      <div className="text-center space-y-2 sm:space-y-3 md:space-y-4 max-w-lg mx-auto">
+        <h1 className="text-xl sm:text-2xl md:text-4xl font-bold text-gray-900 tracking-tight">System Notification System</h1>
+        <p className="text-xs sm:text-sm text-gray-500 px-2">
           Demonstration of semantic notifications for different system states.
         </p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-12 w-full max-w-4xl">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 sm:gap-8 md:gap-12 w-full max-w-2xl md:max-w-4xl">
 
-        <div className="space-y-6">
-          <h2 className="text-xl font-semibold text-gray-900 border-b pb-2">Modal Alerts</h2>
-          <div className="grid grid-cols-2 gap-4">
-            <Button onClick={() => triggerAlert('success')} variant="outline" className="border-green-200 hover:bg-green-50 text-green-700">
+        <div className="space-y-3 sm:space-y-4 md:space-y-6">
+          <h2 className="text-lg sm:text-xl font-semibold text-gray-900 border-b pb-1.5 sm:pb-2">Modal Alerts</h2>
+          <div className="grid grid-cols-2 gap-2 sm:gap-3 md:gap-4">
+            <Button 
+              onClick={() => triggerAlert('success')} 
+              variant="outline" 
+              className="border-green-200 hover:bg-green-50 text-green-700 text-xs sm:text-sm h-8 sm:h-10"
+            >
               Success Modal
             </Button>
-            <Button onClick={() => triggerAlert('error')} variant="outline" className="border-red-200 hover:bg-red-50 text-red-700">
+            <Button 
+              onClick={() => triggerAlert('error')} 
+              variant="outline" 
+              className="border-red-200 hover:bg-red-50 text-red-700 text-xs sm:text-sm h-8 sm:h-10"
+            >
               Error Modal
             </Button>
-            <Button onClick={() => triggerAlert('warning')} variant="outline" className="border-amber-200 hover:bg-amber-50 text-amber-700">
+            <Button 
+              onClick={() => triggerAlert('warning')} 
+              variant="outline" 
+              className="border-amber-200 hover:bg-amber-50 text-amber-700 text-xs sm:text-sm h-8 sm:h-10"
+            >
               Warning Modal
             </Button>
-            <Button onClick={() => triggerAlert('info')} variant="outline" className="border-blue-200 hover:bg-blue-50 text-blue-700">
+            <Button 
+              onClick={() => triggerAlert('info')} 
+              variant="outline" 
+              className="border-blue-200 hover:bg-blue-50 text-blue-700 text-xs sm:text-sm h-8 sm:h-10"
+            >
               Info Modal
             </Button>
           </div>
         </div>
         
-        <div className="space-y-6">
-          <h2 className="text-xl font-semibold text-gray-900 border-b pb-2">Toast Snackbars</h2>
-          <div className="grid grid-cols-2 gap-4">
-            <Button onClick={() => triggerSnackbar('success')} variant="outline" className="border-green-200 hover:bg-green-50 text-green-700">
+        <div className="space-y-3 sm:space-y-4 md:space-y-6">
+          <h2 className="text-lg sm:text-xl font-semibold text-gray-900 border-b pb-1.5 sm:pb-2">Toast Snackbars</h2>
+          <div className="grid grid-cols-2 gap-2 sm:gap-3 md:gap-4">
+            <Button 
+              onClick={() => triggerSnackbar('success')} 
+              variant="outline" 
+              className="border-green-200 hover:bg-green-50 text-green-700 text-xs sm:text-sm h-8 sm:h-10"
+            >
               Success Toast
             </Button>
-            <Button onClick={() => triggerSnackbar('error')} variant="outline" className="border-red-200 hover:bg-red-50 text-red-700">
+            <Button 
+              onClick={() => triggerSnackbar('error')} 
+              variant="outline" 
+              className="border-red-200 hover:bg-red-50 text-red-700 text-xs sm:text-sm h-8 sm:h-10"
+            >
               Error Toast
             </Button>
-            <Button onClick={() => triggerSnackbar('warning')} variant="outline" className="border-amber-200 hover:bg-amber-50 text-amber-700">
+            <Button 
+              onClick={() => triggerSnackbar('warning')} 
+              variant="outline" 
+              className="border-amber-200 hover:bg-amber-50 text-amber-700 text-xs sm:text-sm h-8 sm:h-10"
+            >
               Warning Toast
             </Button>
-            <Button onClick={() => triggerSnackbar('info')} variant="outline" className="border-blue-200 hover:bg-blue-50 text-blue-700">
+            <Button 
+              onClick={() => triggerSnackbar('info')} 
+              variant="outline" 
+              className="border-blue-200 hover:bg-blue-50 text-blue-700 text-xs sm:text-sm h-8 sm:h-10"
+            >
               Info Toast
             </Button>
           </div>

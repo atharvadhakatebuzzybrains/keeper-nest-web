@@ -5,6 +5,8 @@ import "./styles/navbarStyles.css";
 import { useNavigate } from "react-router-dom";
 import { account } from "../appwrite/config";
 import { roleCache } from "../utils/roleCache";
+import ConfirmModal from "./ConfirmModal";
+import { set } from "zod";
 interface props {
   name: string,
   email: string,
@@ -20,6 +22,8 @@ export default function Navbar({name, email, role}: props) {
     name: name,
     initials: logo,
   };
+
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -85,7 +89,6 @@ export default function Navbar({name, email, role}: props) {
           </Avatar>
         </div>
 
-        {/* Dropdown Menu */}
         {isDropdownOpen && (
           <div className="dropdown-menu" ref={dropdownRef}>
             <div className="dropdown-header">
@@ -126,14 +129,29 @@ export default function Navbar({name, email, role}: props) {
 
             <button 
               className="dropdown-item logout"
-              onClick={() => handleLogout()}
+              onClick={() => {
+                setShowLogoutConfirm(true);
+                setIsDropdownOpen(false);
+              }}
             >
               <LogOut className="dropdown-item-icon" />
-              <span>Logout</span>
+              <span>Sign Out</span>
             </button>
           </div>
         )}
       </div>
+
+      <ConfirmModal
+        isOpen={showLogoutConfirm}
+        onClose={() => setShowLogoutConfirm(false)}
+        onConfirm={handleLogout}
+        title="Sign Out"
+        icon={<LogOut className="h-6 w-6" />}
+        description="Are you sure you want to sign out? You'll need to log in again to access your account."
+        confirmText="Sign Out"
+        cancelText="Cancel"
+        type="danger"
+      />
     </nav>
   );
 }

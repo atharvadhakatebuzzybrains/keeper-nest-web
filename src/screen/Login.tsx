@@ -5,6 +5,7 @@ import { account, databases } from '../appwrite/config';
 import { Query } from 'appwrite';
 import { useNavigate } from 'react-router-dom';
 import { roleCache } from '../utils/roleCache';
+import ForgotPasswordModal from '../components/adminComponents/ForgetPasswordModal';
 
 const Login = () => {
     const [email, setEmail] = useState('');
@@ -14,7 +15,8 @@ const Login = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [checkingAuth, setCheckingAuth] = useState(true);
     const [error, setError] = useState('');
-    
+    const [modalOpen, setModalOpen] = useState(false);
+
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -118,7 +120,7 @@ const Login = () => {
         try {
             try {
                 await account.deleteSession('current');
-            } catch (error) {}
+            } catch (error) { }
 
             await account.createEmailPasswordSession(email, password);
             const user = await account.get();
@@ -135,7 +137,7 @@ const Login = () => {
 
             const employeeData = response.documents[0];
             const role = employeeData.role;
-            
+
             roleCache.setRole(role as 'admin' | 'employee');
 
             if (rememberMe) {
@@ -183,7 +185,7 @@ const Login = () => {
     }
 
     return (
-        <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+        <div className="min-h-screen bg-gradient-to-b from-blue-50/30 to-white flex items-center justify-center p-4">
             <div className="w-full max-w-4xl flex flex-col lg:flex-row items-center justify-center">
 
                 <div className="lg:hidden mb-6 w-full flex flex-col items-center">
@@ -193,7 +195,6 @@ const Login = () => {
                         className="w-32 h-32 object-contain"
                     />
                     <h1 className="text-2xl font-bold text-[#3b82f6] mt-2">KeeperNest</h1>
-                    <p className="text-gray-600 text-sm mt-1 text-center">Secure Login Portal</p>
                 </div>
 
                 <div className="w-full max-w-sm md:max-w-md lg:w-1/2 lg:max-w-lg bg-white rounded-xl md:rounded-2xl shadow-lg p-5 md:p-6 lg:p-8 mx-auto lg:mx-0">
@@ -268,8 +269,8 @@ const Login = () => {
                             </div>
                         )}
 
-                        <div className="flex flex-col sm:flex-row justify-between items-center gap-3">
-                            <label className="flex items-center gap-2 cursor-pointer w-full sm:w-auto">
+                        <div className="flex justify-between items-center gap-3">
+                            <label className="flex items-center gap-2 cursor-pointer">
                                 <input
                                     type="checkbox"
                                     checked={rememberMe}
@@ -277,11 +278,12 @@ const Login = () => {
                                     className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2 cursor-pointer"
                                     disabled={isLoading}
                                 />
-                                <span className="text-sm text-gray-600">Remember me</span>
+                                <span className="text-sm text-gray-600 whitespace-nowrap">Remember me</span>
                             </label>
                             <button
-                                className="text-sm text-blue-600 hover:text-blue-700 font-medium whitespace-nowrap w-full sm:w-auto text-right"
+                                className="text-sm text-blue-600 hover:text-blue-700 font-medium whitespace-nowrap hover:underline"
                                 disabled={isLoading}
+                                onClick={() => setModalOpen(true)}
                             >
                                 Forgot password?
                             </button>
@@ -328,11 +330,15 @@ const Login = () => {
                         </div>
                         <h2 className="text-2xl font-bold text-gray-800 mb-4">Welcome to KeeperNest</h2>
                         <p className="text-gray-600 text-lg">
-                            Secure document management system for your organization's needs.
+                            Secure management system for your organization's needs.
                         </p>
                     </div>
                 </div>
             </div>
+            <ForgotPasswordModal
+                open={modalOpen}
+                onOpenChange={setModalOpen}
+            />
         </div>
     )
 }

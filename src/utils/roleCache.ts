@@ -1,4 +1,3 @@
-// utils/roleCache.ts
 class RoleCache {
   private static instance: RoleCache;
   private role: 'admin' | 'employee' | null = null;
