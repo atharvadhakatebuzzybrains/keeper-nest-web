@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff, Loader2 } from "lucide-react";
 
 import {
   Dialog,
@@ -12,6 +12,7 @@ import { Input } from "../ui/input";
 import { Label } from "../ui/label";
 import { account, databases } from "../../appwrite/config";
 import { encrypt } from "../../appwrite/encrypt_decrypt_password";
+import { Snackbar, useNotification } from "../Alerts";
 
 interface ChangePasswordModalProps {
   isOpen: boolean;
@@ -26,6 +27,8 @@ const ChangePasswordModal = ({ isOpen, onClose }: ChangePasswordModalProps) => {
   const [showCurrent, setShowCurrent] = useState(false);
   const [showNew, setShowNew] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
+  const {snackbar, showSnackbar, closeSnackbar} = useNotification();
+  const [loading, setLoading] = useState(false);
 
   const passwordsMatch =
     newPassword.length >= 8 &&
@@ -37,6 +40,7 @@ const ChangePasswordModal = ({ isOpen, onClose }: ChangePasswordModalProps) => {
 
 
   const handleChangePassword = async () => {
+    setLoading(true);
     setNewPassword("");
     setConfirmPassword("");
     setCurrentPassword("");
@@ -54,21 +58,23 @@ const ChangePasswordModal = ({ isOpen, onClose }: ChangePasswordModalProps) => {
           password: encrypt(newPassword),
         }
       );
-      alert("Password updated");
+      showSnackbar("Password updated successfully", "success");
       onClose();
     }catch(err){
       alert(err);
+    }finally{
+      setLoading(false);
     }
   };
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-md">
-        <DialogHeader>
+      <DialogContent className="w-[calc(100%-32px)] max-w-md mx-auto p-0 sm:p-6 my-4 sm:my-0">
+        <DialogHeader className="px-4 sm:px-6 pt-4 sm:pt-0 pb-4">
           <DialogTitle>Change Password</DialogTitle>
         </DialogHeader>
 
-        <div className="space-y-4 p-5">
+        <div className="space-y-4 px-4 sm:px-0">
           {/* Current Password */}
           <div className="space-y-2">
             <Label>Current Password</Label>
@@ -147,20 +153,29 @@ const ChangePasswordModal = ({ isOpen, onClose }: ChangePasswordModalProps) => {
             )}
           </div>
 
-          {/* Actions */}
-          <div className="flex justify-end gap-3 pt-2">
+          <div className="flex justify-end gap-3 pt-2 px-0 pb-4 sm:pb-0 border-t border-gray-200 sm:border-0 mt-4 sm:mt-2">
             <Button variant="outline" onClick={onClose}>
               Cancel
             </Button>
             <Button
               onClick={handleChangePassword}
-              disabled={!passwordsMatch || !currentPassword}
+              disabled={!passwordsMatch || !currentPassword || loading}
             >
-              Update Password
+              {
+              loading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Update Password"
+              }
             </Button>
           </div>
         </div>
       </DialogContent>
+
+      <Snackbar
+                    isOpen={snackbar.isOpen}
+                    onClose={closeSnackbar}
+                    message={snackbar.message}
+                    type={snackbar.type}
+                    duration={4000}
+                  />
     </Dialog>
   );
 };

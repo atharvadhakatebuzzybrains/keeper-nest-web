@@ -4,6 +4,7 @@ import Login from '../screen/Login'
 import Signup from '../screen/Signup'
 import { account } from '../appwrite/config';
 import NotFound from '../components/NotFound';
+import Alerts from '../components/Alerts';
 
 export default function InitialRouter() {
   const navigate = useNavigate();
@@ -16,7 +17,7 @@ export default function InitialRouter() {
           navigate('/dashboard/');
         }
       } catch (err) {
-        // not logged in or error - stay on initial routes
+
       }
     };
 
@@ -26,6 +27,7 @@ export default function InitialRouter() {
     <Routes>
       <Route path="/" element={<Login />} />
       <Route path="/signup" element={<Signup />} />
+      <Route path="/alerts" element={<Alerts />} />
       <Route path='*' element={<NotFound />} />
     </Routes>
   )

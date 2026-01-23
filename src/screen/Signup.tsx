@@ -20,11 +20,10 @@ import {
   FormField,
   FormItem,
   FormLabel,
-  FormMessage,
 } from "../components/ui/form"
+import { Snackbar, useNotification } from "../components/Alerts"
 import { account, databases } from "../appwrite/config"
 import { encrypt } from '../appwrite/encrypt_decrypt_password'
-import { roleCache } from '../utils/roleCache'
 
 const signupSchema = z.object({
   fullName: z.string()
@@ -50,6 +49,7 @@ export default function Signup() {
   const [showPassword, setShowPassword] = useState(false);
   const [submitError, setSubmitError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const { snackbar, showSnackbar, closeSnackbar } = useNotification();
 
   const form = useForm<SignupFormValues>({
     resolver: zodResolver(signupSchema),
@@ -94,41 +94,45 @@ export default function Signup() {
           role: values.role,
           creatorMail: `${values.fullName} (${values.employeeId})`
         }
-      );
+      );  
 
-      await account.createEmailPasswordSession(values.email, values.password);
-  // Cache role locally so DashboardRouter can pick it up immediately
-  roleCache.setRole(values.role as 'admin' | 'employee');
-
-  // Navigate to the dashboard (DashboardRouter will render admin/employee view based on role)
-  navigate('/dashboard/');
+      showSnackbar(`Account created successfully! Welcome, ${values.fullName}!`, 'success');
+      
+      setTimeout(() => {
+        navigate('/');
+      }, 2000);
+      
+      
 
     } catch (error: any) {
       console.error("Signup error:", error);
       
       if (error?.code === 409) {
         if (error.message?.includes("email")) {
+          showSnackbar("This email is already registered. Please use a different email.", 'error');
           form.setError("email", {
             type: "manual",
             message: "This email is already registered"
           });
         } else if (error.message?.includes("user")) {
+          showSnackbar("❌ This employee ID is already taken. Please use a different ID.", 'error');
           form.setError("employeeId", {
             type: "manual",
             message: "This employee ID is already taken"
           });
         } else {
-          setSubmitError("Account already exists with these credentials");
+          showSnackbar("❌ Account already exists with these credentials.", 'error');
         }
       } else if (error?.code === 400) {
-        setSubmitError("Invalid data provided. Please check your inputs.");
+        showSnackbar("❌ Invalid data provided. Please check your inputs.", 'error');
       } else if (error?.message?.includes("password")) {
+        showSnackbar("❌ Password does not meet requirements (minimum 8 characters).", 'error');
         form.setError("password", {
           type: "manual",
           message: "Password does not meet requirements"
         });
       } else {
-        setSubmitError("Something went wrong. Please try again.");
+        showSnackbar("❌ Something went wrong. Please try again.", 'error');
       }
     } finally {
       setIsLoading(false);
@@ -143,7 +147,7 @@ export default function Signup() {
   );
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-blue-50/30 to-white py-8 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-6 bg-white p-8 rounded-3xl shadow-xl">
         <div className="text-center">
           <h2 className="mt-2 text-3xl font-bold text-[#3b82f6] tracking-tight">
@@ -350,6 +354,15 @@ export default function Signup() {
           </form>
         </Form>
       </div>
+
+      {/* Snackbar Notification */}
+      <Snackbar
+        isOpen={snackbar.isOpen}
+        onClose={closeSnackbar}
+        message={snackbar.message}
+        type={snackbar.type}
+        duration={4000}
+      />
     </div>
   )
 }
