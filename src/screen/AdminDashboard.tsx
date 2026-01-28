@@ -155,74 +155,75 @@ export default function AdminDashboard() {
           </Card>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 mb-8">
-          <div className="lg:col-span-3 grid grid-cols-1 sm:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4 md:gap-6 mb-6 sm:mb-7 md:mb-8">
+          <div className="md:col-span-2 lg:col-span-3 grid grid-cols-2 gap-3 sm:gap-4 md:gap-6">
             <Card className="border border-blue-100 bg-white shadow-sm hover:shadow-md transition-shadow duration-200">
-              <CardContent className="pt-6">
+              <CardContent className="p-3 sm:p-4 md:p-5">
                 <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm font-medium text-gray-500">Total Assets</p>
-                    <h3 className="text-2xl font-bold mt-2">{stats.totalAssets}</h3>
+                  <div className="flex-1">
+                    <p className="text-xs sm:text-sm font-medium text-gray-500">Total Assets</p>
+                    <h3 className="text-lg sm:text-xl md:text-2xl font-bold mt-1">{stats.totalAssets}</h3>
                   </div>
-                  <div className="h-14 w-14 rounded-lg bg-blue-100 flex items-center justify-center">
-                    <Package className="h-6 w-6 text-blue-600" />
+                  <div className="h-10 w-10 sm:h-12 sm:w-12 md:h-14 md:w-14 rounded-lg bg-blue-100 flex items-center justify-center">
+                    <Package className="h-5 w-5 sm:h-6 sm:w-6 text-blue-600" />
                   </div>
                 </div>
               </CardContent>
             </Card>
 
             <Card className="border border-green-100 bg-white shadow-sm hover:shadow-md transition-shadow duration-200">
-              <CardContent className="pt-6">
+              <CardContent className="p-3 sm:p-4 md:p-5">
                 <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm font-medium text-gray-500">Available</p>
-                    <h3 className="text-2xl font-bold mt-2">{stats.availableAssets}</h3>
+                  <div className="flex-1">
+                    <p className="text-xs sm:text-sm font-medium text-gray-500">Available</p>
+                    <h3 className="text-lg sm:text-xl md:text-2xl font-bold mt-1">{stats.availableAssets}</h3>
                   </div>
-                  <div className="h-14 w-14 rounded-lg bg-green-100 flex items-center justify-center">
-                    <PackageOpen className="h-6 w-6 text-green-600" />
+                  <div className="h-10 w-10 sm:h-12 sm:w-12 md:h-14 md:w-14 rounded-lg bg-green-100 flex items-center justify-center">
+                    <PackageOpen className="h-5 w-5 sm:h-6 sm:w-6 text-green-600" />
                   </div>
                 </div>
               </CardContent>
             </Card>
 
             <Card className="border border-amber-100 bg-white shadow-sm hover:shadow-md transition-shadow duration-200">
-              <CardContent className="pt-6">
+              <CardContent className="p-3 sm:p-4 md:p-5">
                 <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm font-medium text-gray-500">Assigned</p>
-                    <h3 className="text-2xl font-bold mt-2">{stats.assignedAssets}</h3>
+                  <div className="flex-1">
+                    <p className="text-xs sm:text-sm font-medium text-gray-500">Assigned</p>
+                    <h3 className="text-lg sm:text-xl md:text-2xl font-bold mt-1">{stats.assignedAssets}</h3>
                   </div>
-                  <div className="h-14 w-14 rounded-lg bg-amber-100 flex items-center justify-center">
-                    <PackageCheck className="h-6 w-6 text-amber-600" />
+                  <div className="h-10 w-10 sm:h-12 sm:w-12 md:h-14 md:w-14 rounded-lg bg-amber-100 flex items-center justify-center">
+                    <PackageCheck className="h-5 w-5 sm:h-6 sm:w-6 text-amber-600" />
                   </div>
                 </div>
               </CardContent>
             </Card>
 
             <Card className="border border-purple-100 bg-white shadow-sm hover:shadow-md transition-shadow duration-200">
-              <CardContent className="pt-6">
+              <CardContent className="p-3 sm:p-4 md:p-5">
                 <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm font-medium text-gray-500">Maintenance</p>
-                    <h3 className="text-2xl font-bold mt-2">{stats.maintainanceAssets}</h3>
+                  <div className="flex-1">
+                    <p className="text-xs sm:text-sm font-medium text-gray-500">Maintenance</p>
+                    <h3 className="text-lg sm:text-xl md:text-2xl font-bold mt-1">{stats.maintainanceAssets}</h3>
                   </div>
-                  <div className="h-14 w-14 rounded-lg bg-purple-100 flex items-center justify-center">
-                    <Wrench className="h-6 w-6 text-purple-600" />
+                  <div className="h-10 w-10 sm:h-12 sm:w-12 md:h-14 md:w-14 rounded-lg bg-purple-100 flex items-center justify-center">
+                    <Wrench className="h-5 w-5 sm:h-6 sm:w-6 text-purple-600" />
                   </div>
                 </div>
               </CardContent>
             </Card>
           </div>
-          <div className="lg:col-span-2">
+
+          <div className="md:col-span-1 lg:col-span-2 mt-3 sm:mt-0">
             <Card className="h-full border border-blue-100 bg-white shadow-sm hover:shadow-md transition-shadow duration-200">
-              <CardContent className="pt-6 h-full flex flex-col items-center justify-center text-center">
-                <div className="h-20 w-20 rounded-2xl bg-gradient-to-br from-indigo-100 to-purple-100 flex items-center justify-center mb-6">
-                  <Users className="h-10 w-10 text-indigo-600" />
+              <CardContent className="p-4 sm:p-5 md:p-6 h-full flex flex-col items-center justify-center text-center">
+                <div className="h-14 w-14 sm:h-16 sm:w-16 md:h-20 md:w-20 rounded-2xl bg-gradient-to-br from-indigo-100 to-purple-100 flex items-center justify-center mb-4 sm:mb-5">
+                  <Users className="h-7 w-7 sm:h-8 sm:w-8 md:h-10 md:w-10 text-indigo-600" />
                 </div>
                 <div>
-                  <p className="text-xl font-medium text-gray-500 mb-2">Total Employees</p>
-                  <h3 className="text-5xl font-bold text-gray-900 mb-2">{stats.totalEmployees}</h3>
-                  <p className="text-base text-gray-400">Active team members</p>
+                  <p className="text-sm sm:text-base font-medium text-gray-500 mb-1 sm:mb-2">Total Employees</p>
+                  <h3 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-1">{stats.totalEmployees}</h3>
+                  <p className="text-xs sm:text-sm text-gray-400">Active team members</p>
                 </div>
               </CardContent>
             </Card>

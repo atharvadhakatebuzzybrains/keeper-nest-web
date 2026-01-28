@@ -14,18 +14,9 @@ import {
   History,
   Info,
   ArrowLeft,
-  Copy,
   CheckCircle,
   Package,
-  Laptop,
-  Smartphone,
-  Monitor,
-  Keyboard,
-  Mouse,
-  Printer,
-  HardDrive,
-  Server,
-  Shield,
+  Clock,
 } from "lucide-react";
 import { databases } from "../../appwrite/config";
 import { ID } from "appwrite";
@@ -48,35 +39,8 @@ export default function AssetDetails() {
     employeeId: string;
     assignDate: string;
   }>>([]);
-  const [copied, setCopied] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [showUnassignConfirm, setShowUnassignConfirm] = useState(false);
-
-  const getAssetIcon = (assetType: string) => {
-    switch (assetType?.toLowerCase()) {
-      case 'laptop':
-        return <Laptop className="h-5 w-5" />;
-      case 'desktop':
-        return <Monitor className="h-5 w-5" />;
-      case 'phone':
-      case 'mobile':
-        return <Smartphone className="h-5 w-5" />;
-      case 'keyboard':
-        return <Keyboard className="h-5 w-5" />;
-      case 'mouse':
-        return <Mouse className="h-5 w-5" />;
-      case 'printer':
-        return <Printer className="h-5 w-5" />;
-      case 'server':
-        return <Server className="h-5 w-5" />;
-      case 'storage':
-        return <HardDrive className="h-5 w-5" />;
-      case 'security':
-        return <Shield className="h-5 w-5" />;
-      default:
-        return <Package className="h-5 w-5" />;
-    }
-  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -125,7 +89,7 @@ export default function AssetDetails() {
 
       } catch (error) {
         console.error("Error:", error);
-        showSnackbar("Error loading data", "danger");
+        showSnackbar("Error loading data", "error");
       } finally {
         setLoading(false);
       }
@@ -136,9 +100,28 @@ export default function AssetDetails() {
     }
   }, [asset]);
 
+  const getAssetIcon = (assetType: string) => {
+    switch (assetType) {
+      case 'Laptop':
+        return <Package className="h-5 w-5 md:h-6 md:w-6 text-blue-600" />;
+      case 'desktop':
+        return <Package className="h-5 w-5 md:h-6 md:w-6 text-blue-600" />;
+      case 'phone':
+        return <Package className="h-5 w-5 md:h-6 md:w-6 text-blue-600" />;
+      case 'tablet':
+        return <Package className="h-5 w-5 md:h-6 md:w-6 text-blue-600" />;
+      case 'Keyboard':
+        return <Package className="h-5 w-5 md:h-6 md:w-6 text-blue-600" />;
+      case 'Mouse':
+        return <Package className="h-5 w-5 md:h-6 md:w-6 text-blue-600" />;
+      default:
+        return <Package className="h-5 w-5 md:h-6 md:w-6 text-blue-600" />;
+    }
+  };
+
   const handleAssignAsset = async () => {
     if (!selectedEmployee) {
-      showSnackbar("Please select an employee first", "danger");
+      showSnackbar("Please select an employee first", "error");
       return;
     }
 
@@ -182,7 +165,7 @@ export default function AssetDetails() {
       showSnackbar(`Asset assigned successfully to ${selectedEmployee}!`, "success");
     } catch (error) {
       console.error("Error:", error);
-      showSnackbar("Failed to assign asset", "danger");
+      showSnackbar("Failed to assign asset", "error");
     } finally {
       setAssigning(false);
     }
@@ -190,6 +173,11 @@ export default function AssetDetails() {
 
   const handleSendToMaintenance = async () => {
     try {
+      if (asset.status !== 'Available') {
+        showSnackbar('Cannot send asset to maintenance. Please make it available first.', 'error');
+        return;
+      }
+
       await databases.updateDocument('assetManagement', 'assets', asset.docId, {
         status: 'Maintainance'
       });
@@ -199,7 +187,23 @@ export default function AssetDetails() {
       showSnackbar("Asset sent to maintenance!", "success");
     } catch (error) {
       console.error("Error:", error);
-      showSnackbar("Failed to send to maintenance", "danger");
+      showSnackbar("Failed to send to maintenance", "error");
+    }
+  };
+
+  const handleDeleteAsset = async () => {
+    try {
+      if (asset.status !== 'Available') {
+        showSnackbar('Cannot delete asset. Please make it available first.', 'error');
+        return;
+      }
+
+      await databases.deleteDocument('assetManagement', 'assets', asset.docId);
+      showSnackbar("Asset deleted successfully!", "success");
+      navigate('/dashboard/assets');
+    } catch (error) {
+      console.error("Error:", error);
+      showSnackbar("Failed to delete asset", "error");
     }
   };
 
@@ -216,23 +220,7 @@ export default function AssetDetails() {
       setShowUnassignConfirm(false);
     } catch (error) {
       console.error("Error:", error);
-      showSnackbar("Failed to unassign asset", "danger");
-    }
-  };
-
-  const handleDeleteAsset = async () => {
-    try {
-      if (asset.status !== 'Available') {
-        showSnackbar('Cannot delete asset. Please make it available first.', 'danger');
-        return;
-      }
-
-      await databases.deleteDocument('assetManagement', 'assets', asset.docId);
-      showSnackbar("Asset deleted successfully!", "success");
-      navigate('/dashboard/assets');
-    } catch (error) {
-      console.error("Error:", error);
-      showSnackbar("Failed to delete asset", "danger");
+      showSnackbar("Failed to unassign asset", "error");
     }
   };
 
@@ -251,31 +239,19 @@ export default function AssetDetails() {
     }
   };
 
-  const copyToClipboard = () => {
-    navigator.clipboard.writeText(asset.id);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-    showSnackbar("Asset ID copied to clipboard!", "success");
-  };
-
   if (!asset) {
     return (
       <div className="min-h-screen bg-gradient-to-b from-blue-50/30 to-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div className="text-center py-20">
-            <div className="w-24 h-24 bg-blue-50 rounded-full flex items-center justify-center mx-auto mb-6">
-              <Package className="h-12 w-12 text-blue-400" />
-            </div>
-            <h3 className="text-xl font-semibold text-gray-900 mb-2">No Asset Found</h3>
-            <p className="text-gray-600 mb-6">The asset data is not available or has been removed.</p>
-            <Button
-              onClick={() => navigate('/dashboard/assets')}
-              className="bg-blue-600 hover:bg-blue-700 text-white"
-            >
-              <ArrowLeft className="h-4 w-4 mr-2" />
-              Back to Assets
-            </Button>
-          </div>
+        <Header title="Asset Details" subtitle="No asset selected" showSearch={false} />
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 py-6">
+          <Card className="border-blue-200 shadow-sm">
+            <CardContent className="p-6 sm:p-8 text-center">
+              <div className="h-14 w-14 sm:h-16 sm:w-16 rounded-full bg-blue-100 flex items-center justify-center mx-auto mb-4">
+                <Package className="h-6 w-6 sm:h-8 sm:w-8 text-blue-500" />
+              </div>
+              <p className="text-gray-600 mb-4 text-sm sm:text-base">No asset data was provided.</p>
+            </CardContent>
+          </Card>
         </div>
       </div>
     );
@@ -283,140 +259,174 @@ export default function AssetDetails() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-50/30 to-white">
-      <Header 
-        title="Asset Details" 
-        subtitle="Manage and track asset information"
-        showSearch={false}
+      <Header
+        title="Asset Details"
+        subtitle={`View and manage information for ${asset.asset || 'Asset'}`}
       />
-      
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Left Column - Asset Information */}
-          <div className="lg:col-span-2 space-y-6">
-            {/* Asset Information Card */}
-            <Card className="border-blue-200 shadow-lg overflow-hidden">
-              <div className="px-6 py-4 border-b border-blue-100 bg-gradient-to-r from-blue-50 to-blue-100/50">
-                <h2 className="text-xl font-bold text-gray-900">Asset Information</h2>
-              </div>
-              <CardContent className="p-6">
-                <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6 mb-6">
-                  <div className="h-24 w-24 rounded-xl bg-gradient-to-br from-blue-50 to-blue-100 border-2 border-white shadow-lg flex items-center justify-center">
-                    {getAssetIcon(asset.type)}
+      <div className="container mx-auto px-3 sm:px-4 md:px-6 py-4 md:py-6">
+
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6">
+          <div className="lg:col-span-2 space-y-4 md:space-y-6">
+            <Card className="border-blue-200 shadow-sm">
+              <CardContent className="p-4 md:p-6">
+                <div className="md:hidden space-y-4">
+                  <div className="flex items-center justify-center">
+                    <div className="h-16 w-16 rounded-lg bg-gradient-to-br from-blue-50 to-blue-100 border-2 border-white shadow-sm flex items-center justify-center">
+                      {getAssetIcon(asset.type)}
+                    </div>
                   </div>
-                  <div className="flex-1 text-center sm:text-left">
-                    <div className="flex flex-wrap items-center gap-2 mb-3">
+                  
+                  <div className="text-center">
+                    <h1 className="text-xl font-bold text-gray-900 mb-2 break-words">{asset.asset}</h1>
+                    <div className="flex flex-wrap items-center justify-center gap-2 mb-3">
                       <Badge 
                         className={`${
-                          asset.status === 'Assigned' ? 'bg-green-100 text-green-800 hover:bg-green-100' :
-                          asset.status === 'Available' ? 'bg-blue-100 text-blue-800 hover:bg-blue-100' :
-                          'bg-yellow-100 text-yellow-800 hover:bg-yellow-100'
-                        } border-0 font-medium`}
+                          asset.status === 'Assigned' ? 'bg-green-100 text-green-800' :
+                          asset.status === 'Available' ? 'bg-blue-100 text-blue-800' :
+                          'bg-yellow-100 text-yellow-800'
+                        } border-0 text-xs`}
                       >
                         {asset.status === 'Maintainance' ? 'Maintenance' : asset.status}
                       </Badge>
-                      <Badge variant="outline" className="bg-white text-blue-700 border-blue-200">
+                      <Badge variant="outline" className="text-xs bg-white text-blue-700 border-blue-300">
                         {asset.type}
                       </Badge>
                     </div>
-                    <h1 className="text-2xl font-bold text-gray-900 mb-2">{asset.asset}</h1>
-                    <div className="flex flex-wrap items-center gap-3">
-                      <div className="flex items-center gap-1 text-gray-600">
-                        <Badge variant="outline" className="font-mono bg-white text-blue-600 border-blue-300">
-                          #{asset.id}
-                        </Badge>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={copyToClipboard}
-                          className="h-6 w-6 p-0 hover:bg-blue-50"
-                        >
-                          {copied ? (
-                            <CheckCircle className="h-3 w-3 text-green-500" />
-                          ) : (
-                            <Copy className="h-3 w-3 text-blue-500" />
-                          )}
-                        </Button>
+                    
+                    <div className="mb-4">
+                      <div className="flex items-center justify-center gap-2 bg-blue-50 px-3 py-1.5 rounded-md border border-blue-200">
+                        <span className="font-mono text-xs text-blue-700">#{asset.id}</span>
                       </div>
-                      <div className="flex items-center gap-1 text-blue-600">
-                        <Calendar className="h-4 w-4" />
-                        <span className="text-sm">Purchased: {asset.date}</span>
+                    </div>
+                  </div>
+
+                  <div className="space-y-3">
+                    <div className="flex items-center gap-3 p-3 rounded-lg border border-gray-200 bg-white">
+                      <div className="h-10 w-10 rounded-full bg-blue-50 flex items-center justify-center flex-shrink-0">
+                        <Calendar className="h-4 w-4 text-blue-600" />
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <p className="text-xs font-medium text-gray-700">Purchase Date</p>
+                        <p className="text-sm font-semibold text-gray-900">{asset.date}</p>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-3 p-3 rounded-lg border border-gray-200 bg-white">
+                      <div className="h-10 w-10 rounded-full bg-blue-50 flex items-center justify-center flex-shrink-0">
+                        <User className="h-4 w-4 text-blue-600" />
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <p className="text-xs font-medium text-gray-700">Assigned To</p>
+                        <p className={`text-sm font-semibold ${asset.assignedTo === 'Not Assigned' ? 'text-gray-400' : 'text-gray-900'}`}>
+                          {asset.assignedTo}
+                        </p>
                       </div>
                     </div>
                   </div>
                 </div>
 
-                {/* Asset Details Grid */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-                  <div className="flex items-center gap-3 p-4 rounded-lg border border-blue-100 bg-white hover:bg-blue-50/50 transition-colors">
-                    <div className="h-10 w-10 rounded-full bg-blue-50 flex items-center justify-center">
-                      <User className="h-5 w-5 text-blue-600" />
-                    </div>
-                    <div>
-                      <p className="text-sm font-medium text-gray-700">Assigned To</p>
-                      <p className={`text-lg font-semibold ${
-                        asset.assignedTo === 'Not Assigned' ? 'text-gray-400' : 'text-gray-900'
-                      }`}>
-                        {asset.assignedTo}
-                      </p>
-                    </div>
+                {/* Desktop/Tablet Layout (Flex Row) */}
+                <div className="hidden md:flex flex-col lg:flex-row items-start gap-4 lg:gap-6 mb-6">
+                  <div className="h-20 w-20 rounded-lg bg-gradient-to-br from-blue-50 to-blue-100 border-2 border-white shadow-sm flex items-center justify-center flex-shrink-0">
+                    {getAssetIcon(asset.type)}
                   </div>
-
-                  <div className="flex items-center gap-3 p-4 rounded-lg border border-blue-100 bg-white hover:bg-blue-50/50 transition-colors">
-                    <div className="h-10 w-10 rounded-full bg-blue-50 flex items-center justify-center">
-                      <Package className="h-5 w-5 text-blue-600" />
+                  
+                  <div className="flex-1">
+                    <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-3">
+                      <div>
+                        <h1 className="text-2xl font-bold text-gray-900">{asset.asset}</h1>
+                        <div className="flex flex-wrap items-center gap-2 mt-2">
+                          <Badge 
+                            className={`${
+                              asset.status === 'Assigned' ? 'bg-green-100 text-green-800 hover:bg-green-100' :
+                              asset.status === 'Available' ? 'bg-blue-100 text-blue-800 hover:bg-blue-100' :
+                              'bg-yellow-100 text-yellow-800 hover:bg-yellow-100'
+                            } border-0 font-medium`}
+                          >
+                            {asset.status === 'Maintainance' ? 'Maintenance' : asset.status}
+                          </Badge>
+                          <Badge variant="outline" className="bg-white text-blue-700 border-blue-300">
+                            {asset.type}
+                          </Badge>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-2 bg-blue-50 px-3 py-1.5 rounded-md border border-blue-200">
+                          <span className="font-mono text-sm text-blue-700">#{asset.id}</span>
+                        </div>
+                      </div>
                     </div>
-                    <div>
-                      <p className="text-sm font-medium text-gray-700">Asset Type</p>
-                      <p className="text-lg font-semibold text-gray-900">{asset.type}</p>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
+                      <div className="flex items-center gap-3 p-3 rounded-lg border border-gray-200 bg-white hover:bg-blue-50/50 transition-colors">
+                        <div className="h-10 w-10 rounded-full bg-blue-50 flex items-center justify-center">
+                          <Calendar className="h-5 w-5 text-blue-600" />
+                        </div>
+                        <div>
+                          <p className="text-sm font-medium text-gray-700">Purchase Date</p>
+                          <p className="text-base font-semibold text-gray-900">{asset.date}</p>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center gap-3 p-3 rounded-lg border border-gray-200 bg-white hover:bg-blue-50/50 transition-colors">
+                        <div className="h-10 w-10 rounded-full bg-blue-50 flex items-center justify-center">
+                          <User className="h-5 w-5 text-blue-600" />
+                        </div>
+                        <div>
+                          <p className="text-sm font-medium text-gray-700">Assigned To</p>
+                          <p className={`text-base font-semibold ${asset.assignedTo === 'Not Assigned' ? 'text-gray-400' : 'text-gray-900'}`}>
+                            {asset.assignedTo}
+                          </p>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
 
                 {/* Description */}
-                <div className="p-4 rounded-lg border border-blue-100 bg-blue-50/30">
-                  <div className="flex items-center gap-2 mb-3">
-                    <div className="h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center">
-                      <Info className="h-4 w-4 text-blue-600" />
+                {asset.desc && (
+                  <div className="border-t pt-4">
+                    <div className="flex items-center gap-2 mb-3">
+                      <div className="h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center">
+                        <Info className="h-4 w-4 text-blue-600" />
+                      </div>
+                      <h3 className="font-medium text-gray-900 text-sm md:text-base">Description</h3>
                     </div>
-                    <h3 className="font-semibold text-gray-900">Description</h3>
+                    <p className="text-gray-700 text-sm md:text-base pl-10 md:pl-10">{asset.desc}</p>
                   </div>
-                  <p className="text-gray-700 leading-relaxed">{asset.desc}</p>
-                </div>
+                )}
               </CardContent>
             </Card>
 
-            {/* Assignment Section */}
-            <Card className="border-blue-200 shadow-lg overflow-hidden">
-              <div className="px-6 py-4 border-b border-blue-100 bg-gradient-to-r from-blue-50 to-blue-100/50">
-                <h2 className="text-xl font-bold text-gray-900">Assign Asset</h2>
-                <p className="text-sm text-blue-600">Assign this asset to an employee</p>
-              </div>
-              <CardContent className="p-6">
+            {/* Assignment Card */}
+            <Card className="border-blue-200 shadow-sm">
+              <CardContent className="p-4 md:p-6">
+                <h2 className="text-lg font-semibold text-gray-900 mb-4">Assign Asset</h2>
+                
                 <div className="space-y-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Select Employee
+                      Available Employees
                     </label>
                     <CustomDropdown
                       options={employees}
                       value={selectedEmployee}
                       onChange={setSelectedEmployee}
-                      placeholder="Choose an employee..."
-                      searchPlaceholder="Search employees..."
-                      className="w-full border-blue-200 focus:border-blue-500"
+                      placeholder="Select an employee..."
+                      className="w-full"
                       disabled={loading || assigning || asset.status === 'Maintainance'}
                     />
                     {loading && (
-                      <p className="text-sm text-gray-500 mt-1">Loading available employees...</p>
+                      <p className="text-sm text-gray-500 mt-2">Loading available employees...</p>
                     )}
                   </div>
                   
-                  <div className="flex flex-wrap gap-2">
+                  <div className="flex flex-col sm:flex-row gap-2">
                     <Button
                       onClick={handleAssignAsset}
                       disabled={!selectedEmployee || loading || assigning || asset.status === 'Maintainance'}
-                      className="bg-blue-600 hover:bg-blue-700 text-white disabled:bg-gray-400 disabled:cursor-not-allowed"
+                      className="bg-blue-600 hover:bg-blue-700 text-white disabled:bg-gray-400 disabled:cursor-not-allowed flex-1"
                     >
                       {assigning ? (
                         <>
@@ -425,32 +435,17 @@ export default function AssetDetails() {
                         </>
                       ) : (
                         <>
-                          <User className="h-4 w-4 mr-2" />
-                          Assign to Employee
+                          <CheckCircle className="h-4 w-4 mr-2" />
+                          Assign Asset
                         </>
                       )}
                     </Button>
-                    
-                    {asset.assignedTo !== 'Not Assigned' && asset.status === 'Assigned' && (
-                      <Button
-                        variant="outline"
-                        onClick={() => setShowUnassignConfirm(true)}
-                        className="text-gray-700 hover:text-gray-900 border-gray-300 hover:border-gray-400"
-                      >
-                        <User className="h-4 w-4 mr-2" />
-                        Unassign
-                      </Button>
-                    )}
                   </div>
                   
                   {asset.status === 'Maintainance' && (
-                    <div className="mt-4 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
-                      <div className="flex items-center gap-2 text-yellow-800">
-                        <Info className="h-4 w-4 text-yellow-600" />
-                        <p className="text-sm font-medium">Asset is currently in maintenance</p>
-                      </div>
-                      <p className="text-sm text-yellow-700 mt-1">
-                        You cannot assign this asset until maintenance is complete.
+                    <div className="p-3 bg-yellow-50 border border-yellow-200 rounded-md">
+                      <p className="text-sm text-yellow-800">
+                        Asset is currently in maintenance mode and cannot be assigned.
                       </p>
                     </div>
                   )}
@@ -459,59 +454,49 @@ export default function AssetDetails() {
             </Card>
 
             {/* History Section */}
-            <Card className="border-blue-200 shadow-lg overflow-hidden">
-              <div className="px-6 py-4 border-b border-blue-100 bg-gradient-to-r from-blue-50 to-blue-100/50">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <History className="h-5 w-5 text-blue-600" />
-                    <div>
-                      <h2 className="text-xl font-bold text-gray-900">Assignment History</h2>
-                      <p className="text-sm text-blue-600">Track all previous assignments</p>
-                    </div>
+            <Card className="border-blue-200 shadow-sm">
+              <CardContent className="p-4 md:p-6">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
+                  <div className="flex items-center gap-2">
+                    <History className="h-5 w-5 text-gray-500" />
+                    <h2 className="text-lg font-semibold text-gray-900">Assignment History</h2>
                   </div>
-                  <Badge variant="outline" className="bg-white text-blue-700 border-blue-300">
+                  <Badge variant="secondary" className="w-fit">
                     {parsedHistory.length} records
                   </Badge>
                 </div>
-              </div>
-              <CardContent className="p-6">
+
                 {parsedHistory.length > 0 ? (
                   <div className="space-y-3">
                     {parsedHistory.map((entry, index) => (
                       <div
                         key={entry.historyId || index}
-                        className="p-4 rounded-lg border border-blue-100 bg-white hover:bg-blue-50/50 transition-colors"
+                        className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
                       >
-                        <div className="flex items-start gap-4">
-                          <div className="flex-shrink-0">
-                            <div className="h-10 w-10 rounded-full bg-blue-50 border border-blue-100 flex items-center justify-center">
-                              <User className="h-5 w-5 text-blue-600" />
-                            </div>
+                        <div className="flex items-center gap-3 flex-1 min-w-0">
+                          <div className="h-10 w-10 rounded-full bg-gray-50 border border-gray-200 flex items-center justify-center flex-shrink-0">
+                            <User className="h-4 w-4 text-gray-600" />
                           </div>
-                          <div className="flex-1 min-w-0">
-                            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
-                              <div>
-                                <h4 className="font-medium text-gray-900">
-                                  {entry.employeeId.split('(')[0]?.trim() || entry.employeeId}
-                                </h4>
-                                <p className="text-sm text-blue-600 mt-1">
-                                  {entry.employeeId.includes('(') 
-                                    ? entry.employeeId.match(/\(([^)]+)\)/)?.[1] || entry.employeeId 
-                                    : "No ID"}
-                                </p>
-                              </div>
-                              <div className="flex items-center gap-2 text-sm text-blue-600">
-                                <Calendar className="h-4 w-4" />
-                                <span>{formatDate(entry.assignDate)}</span>
-                              </div>
-                            </div>
+                          <div className="min-w-0 flex-1">
+                            <p className="font-medium text-gray-900 truncate">
+                              {entry.employeeId.split('(')[0]?.trim() || entry.employeeId}
+                            </p>
+                            <p className="text-sm text-gray-500 truncate">
+                              {entry.employeeId.includes('(') 
+                                ? entry.employeeId.match(/\(([^)]+)\)/)?.[1] || entry.employeeId 
+                                : "No ID"}
+                            </p>
                           </div>
+                        </div>
+                        <div className="flex items-center gap-2 text-sm text-gray-600 sm:ml-3 sm:flex-shrink-0">
+                          <Clock className="h-4 w-4" />
+                          <span className="whitespace-nowrap">{formatDate(entry.assignDate)}</span>
                         </div>
                       </div>
                     ))}
                   </div>
                 ) : (
-                  <div className="text-center py-8">
+                  <div className="text-center py-8 border border-dashed border-gray-300 rounded-lg">
                     <History className="h-12 w-12 text-gray-300 mx-auto mb-3" />
                     <p className="text-gray-600 font-medium">No assignment history found</p>
                     <p className="text-sm text-gray-500 mt-1">
@@ -523,18 +508,14 @@ export default function AssetDetails() {
             </Card>
           </div>
 
-          {/* Right Column - Quick Actions */}
-          <div className="space-y-6">
+          <div className="space-y-4 md:space-y-6">
             {/* Quick Actions Card */}
-            <Card className="border-blue-200 shadow-lg overflow-hidden">
-              <div className="px-6 py-4 border-b border-blue-100 bg-gradient-to-r from-blue-50 to-blue-100/50">
-                <h2 className="text-xl font-bold text-gray-900">Quick Actions</h2>
-                <p className="text-sm text-blue-600">Manage asset status</p>
-              </div>
-              <CardContent className="p-6">
+            <Card className="border-blue-200 shadow-sm">
+              <CardContent className="p-4 md:p-6">
+                <h2 className="text-lg font-semibold text-gray-900 mb-4">Quick Actions</h2>
+                
                 <div className="space-y-3">
                   <Button
-                    variant="outline"
                     onClick={handleSendToMaintenance}
                     disabled={asset.status === 'Maintainance'}
                     className="w-full justify-start border-yellow-200 bg-yellow-50 hover:bg-yellow-100 hover:border-yellow-300 text-yellow-800 disabled:opacity-50 disabled:cursor-not-allowed"
@@ -544,7 +525,6 @@ export default function AssetDetails() {
                   </Button>
 
                   <Button
-                    variant="outline"
                     onClick={() => navigate(`/update-asset/${asset.docId}`, { state: { asset } })}
                     className="w-full justify-start border-green-200 bg-green-50 hover:bg-green-100 hover:border-green-300 text-green-800"
                   >
@@ -553,49 +533,12 @@ export default function AssetDetails() {
                   </Button>
 
                   <Button
-                    variant="outline"
                     onClick={() => setShowDeleteConfirm(true)}
                     className="w-full justify-start border-red-200 bg-red-50 hover:bg-red-100 hover:border-red-300 text-red-800"
                   >
                     <Trash2 className="h-4 w-4 mr-2" />
                     Delete Asset
                   </Button>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Asset Status Card */}
-            <Card className="border-blue-200 shadow-lg overflow-hidden">
-              <div className="px-6 py-4 border-b border-blue-100 bg-gradient-to-r from-blue-50 to-blue-100/50">
-                <h2 className="text-xl font-bold text-gray-900">Asset Status</h2>
-                <p className="text-sm text-blue-600">Current asset information</p>
-              </div>
-              <CardContent className="p-6">
-                <div className="space-y-3">
-                  <div className="flex items-center justify-between p-3 rounded-lg border border-blue-100 bg-blue-50/50">
-                    <span className="text-gray-700">Current Status</span>
-                    <Badge 
-                      className={`${
-                        asset.status === 'Assigned' ? 'bg-green-100 text-green-800 hover:bg-green-100' :
-                        asset.status === 'Available' ? 'bg-blue-100 text-blue-800 hover:bg-blue-100' :
-                        'bg-yellow-100 text-yellow-800 hover:bg-yellow-100'
-                      } border-0`}
-                    >
-                      {asset.status === 'Maintainance' ? 'Maintenance' : asset.status}
-                    </Badge>
-                  </div>
-                  <div className="flex items-center justify-between p-3 rounded-lg border border-blue-100 bg-blue-50/50">
-                    <span className="text-gray-700">Asset Type</span>
-                    <span className="font-medium text-gray-900">{asset.type}</span>
-                  </div>
-                  <div className="flex items-center justify-between p-3 rounded-lg border border-blue-100 bg-blue-50/50">
-                    <span className="text-gray-700">Asset ID</span>
-                    <span className="font-mono font-medium text-blue-700">#{asset.id}</span>
-                  </div>
-                  <div className="flex items-center justify-between p-3 rounded-lg border border-blue-100 bg-blue-50/50">
-                    <span className="text-gray-700">Purchase Date</span>
-                    <span className="font-medium text-gray-900">{asset.date}</span>
-                  </div>
                 </div>
               </CardContent>
             </Card>
@@ -611,7 +554,6 @@ export default function AssetDetails() {
         duration={4000}
       />
 
-      {/* Delete Confirmation Modal */}
       <ConfirmModal
         isOpen={showDeleteConfirm}
         onClose={() => setShowDeleteConfirm(false)}
@@ -623,7 +565,6 @@ export default function AssetDetails() {
         type="danger"
       />
 
-      {/* Unassign Confirmation Modal */}
       <ConfirmModal
         isOpen={showUnassignConfirm}
         onClose={() => setShowUnassignConfirm(false)}
