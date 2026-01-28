@@ -13,15 +13,18 @@ import {
   Trash2,
   History,
   Info,
-  ArrowLeft,
   CheckCircle,
   Package,
   Clock,
+  Laptop,
+  Keyboard,
+  Mouse,
 } from "lucide-react";
 import { databases } from "../../appwrite/config";
 import { ID } from "appwrite";
 import { Snackbar, useNotification } from "../Alerts";
 import ConfirmModal from "../ConfirmModal";
+import UpdateAssetModal from "./UpdateModal";
 
 export default function AssetDetails() {
   const location = useLocation();
@@ -41,6 +44,7 @@ export default function AssetDetails() {
   }>>([]);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [showUnassignConfirm, setShowUnassignConfirm] = useState(false);
+  const [showUpdateModal, setShowUpdateModal] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -103,19 +107,13 @@ export default function AssetDetails() {
   const getAssetIcon = (assetType: string) => {
     switch (assetType) {
       case 'Laptop':
-        return <Package className="h-5 w-5 md:h-6 md:w-6 text-blue-600" />;
-      case 'desktop':
-        return <Package className="h-5 w-5 md:h-6 md:w-6 text-blue-600" />;
-      case 'phone':
-        return <Package className="h-5 w-5 md:h-6 md:w-6 text-blue-600" />;
-      case 'tablet':
-        return <Package className="h-5 w-5 md:h-6 md:w-6 text-blue-600" />;
+        return <Laptop className="h-7 w-7 md:h-9 md:w-9 text-blue-600" />;
       case 'Keyboard':
-        return <Package className="h-5 w-5 md:h-6 md:w-6 text-blue-600" />;
+        return <Keyboard className="h-7 w-7 md:h-9 md:w-9 text-blue-600" />;
       case 'Mouse':
-        return <Package className="h-5 w-5 md:h-6 md:w-6 text-blue-600" />;
+        return <Mouse className="h-7 w-7 md:h-9 md:w-9 text-blue-600" />;
       default:
-        return <Package className="h-5 w-5 md:h-6 md:w-6 text-blue-600" />;
+        return <Package className="h-7 w-7 md:h-9 md:w-9 text-blue-600" />;
     }
   };
 
@@ -399,7 +397,6 @@ export default function AssetDetails() {
               </CardContent>
             </Card>
 
-            {/* Assignment Card */}
             <Card className="border-blue-200 shadow-sm">
               <CardContent className="p-4 md:p-6">
                 <h2 className="text-lg font-semibold text-gray-900 mb-4">Assign Asset</h2>
@@ -453,7 +450,6 @@ export default function AssetDetails() {
               </CardContent>
             </Card>
 
-            {/* History Section */}
             <Card className="border-blue-200 shadow-sm">
               <CardContent className="p-4 md:p-6">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
@@ -525,7 +521,7 @@ export default function AssetDetails() {
                   </Button>
 
                   <Button
-                    onClick={() => navigate(`/update-asset/${asset.docId}`, { state: { asset } })}
+                    onClick={() => setShowUpdateModal(true)}
                     className="w-full justify-start border-green-200 bg-green-50 hover:bg-green-100 hover:border-green-300 text-green-800"
                   >
                     <Edit className="h-4 w-4 mr-2" />
@@ -574,6 +570,12 @@ export default function AssetDetails() {
         confirmText="Unassign"
         cancelText="Cancel"
         type="warning"
+      />
+
+      <UpdateAssetModal
+        asset={asset}
+        visible={showUpdateModal}
+        onClose={() => setShowUpdateModal(false)}
       />
     </div>
   );

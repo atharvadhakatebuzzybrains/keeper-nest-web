@@ -108,31 +108,27 @@ export default function Signup() {
       console.error("Signup error:", error);
       
       if (error?.code === 409) {
-        if (error.message?.includes("email")) {
-          showSnackbar("This email is already registered. Please use a different email.", 'error');
-          form.setError("email", {
-            type: "manual",
-            message: "This email is already registered"
-          });
-        } else if (error.message?.includes("user")) {
-          showSnackbar("❌ This employee ID is already taken. Please use a different ID.", 'error');
-          form.setError("employeeId", {
-            type: "manual",
-            message: "This employee ID is already taken"
-          });
-        } else {
-          showSnackbar("❌ Account already exists with these credentials.", 'error');
-        }
+        // Common message for both email and ID conflicts
+        showSnackbar("An account with this email or employee ID already exists. Please use different credentials.", 'error');
+        // Clear both fields to encourage user to try different values
+        form.setError("email", {
+          type: "manual",
+          message: "This email may already be registered"
+        });
+        form.setError("employeeId", {
+          type: "manual",
+          message: "This employee ID may already be taken"
+        });
       } else if (error?.code === 400) {
-        showSnackbar("❌ Invalid data provided. Please check your inputs.", 'error');
+        showSnackbar("Invalid data provided. Please check your inputs.", 'error');
       } else if (error?.message?.includes("password")) {
-        showSnackbar("❌ Password does not meet requirements (minimum 8 characters).", 'error');
+        showSnackbar("Password does not meet requirements (minimum 8 characters).", 'error');
         form.setError("password", {
           type: "manual",
           message: "Password does not meet requirements"
         });
       } else {
-        showSnackbar("❌ Something went wrong. Please try again.", 'error');
+        showSnackbar("Something went wrong. Please try again.", 'error');
       }
     } finally {
       setIsLoading(false);
@@ -355,7 +351,6 @@ export default function Signup() {
         </Form>
       </div>
 
-      {/* Snackbar Notification */}
       <Snackbar
         isOpen={snackbar.isOpen}
         onClose={closeSnackbar}

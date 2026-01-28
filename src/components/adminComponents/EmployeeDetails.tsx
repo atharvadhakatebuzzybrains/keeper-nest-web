@@ -242,6 +242,7 @@ export default function EmployeeDetails() {
 
     const confirmRemoveEmployee = async () => {
         setIsRemoving(true);
+        setShowDeleteConfirm(false);
 
         try {
             const execution = await functions.createExecution(

@@ -139,7 +139,7 @@ export default function ViewAssets() {
             ? 'bg-blue-100 text-blue-800'
             : 'bg-yellow-100 text-yellow-800'
           }`}>
-          {item.status}
+          {item.status === 'Maintainance' ? 'Maintenance' : item.status}
         </span>
       )
     },

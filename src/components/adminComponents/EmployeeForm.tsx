@@ -1,7 +1,7 @@
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import * as z from "zod"
-import { User, Mail, IdCard, PlusCircle, RefreshCcw, Loader, Loader2 } from "lucide-react"
+import { User, Mail, IdCard, PlusCircle, RefreshCcw, Loader2 } from "lucide-react"
 import { useState } from "react"
 import { Snackbar, useNotification } from '../Alerts';
 import { Button } from "../ui/button"
@@ -142,37 +142,51 @@ export default function AddEmployeeDetails() {
         to: values.email,
         subject: `Welcome to KeeperNest — Your Employee Account Details`,
         html: `
-  <div style="font-family: 'Segoe UI', Arial, sans-serif; background: linear-gradient(135deg, #f5f7fb 0%, #eef1f9 100%); padding: 40px; text-align: center;">
-    <div style="max-width: 600px; margin: 0 auto; background: #ffffff; border-radius: 16px; overflow: hidden; box-shadow: 0 8px 20px rgba(79,70,229,0.15);">
+  <style>
+    @media (max-width: 600px) {
+      .email-container { padding: 20px !important; }
+      .email-wrapper { padding: 0 !important; margin: 0 !important; }
+      .header { padding: 20px 16px !important; }
+      .header h1 { font-size: 20px !important; }
+      .body { padding: 20px 16px !important; }
+      .body p { font-size: 14px !important; }
+      .credentials-card { padding: 14px 16px !important; margin: 20px 0 !important; }
+      .signature { font-size: 14px !important; }
+      .footer { padding: 12px 16px !important; }
+      .footer p { font-size: 11px !important; }
+    }
+  </style>
+  <div class="email-container" style="font-family: 'Segoe UI', Arial, sans-serif; background: linear-gradient(135deg, #f5f7fb 0%, #eef1f9 100%); padding: 40px; text-align: center;">
+    <div class="email-wrapper" style="max-width: 600px; margin: 0 auto; background: #ffffff; border-radius: 16px; overflow: hidden; box-shadow: 0 8px 20px rgba(79,70,229,0.15);">
       
       <!-- Header -->
-      <div style="background: linear-gradient(135deg, #3b82f6, #60a5fa); color: #fff; padding: 30px 20px;">
+      <div class="header" style="background: linear-gradient(135deg, #3b82f6, #60a5fa); color: #fff; padding: 30px 20px;">
         <h1 style="margin: 0; font-size: 26px; letter-spacing: 0.5px;">Welcome to KeeperNest</h1>
       </div>
 
       <!-- Body -->
-      <div style="padding: 30px 25px; text-align: left;">
-        <p style="font-size: 16px; color: #333;">Hi <strong>${values.fullName}</strong>,</p>
-        <p style="color: #555; font-size: 15px; line-height: 1.6;">
+      <div class="body" style="padding: 30px 25px; text-align: left;">
+        <p style="font-size: 16px; color: #333; margin: 0 0 15px 0;">Hi <strong>${values.fullName}</strong>,</p>
+        <p style="color: #555; font-size: 15px; line-height: 1.6; margin: 0 0 20px 0;">
           We're excited to have you on board at <strong>KeeperNest</strong>!<br>
           Your employee account has been created successfully. Below are your login credentials — please use them to access your account.
         </p>
 
         <!-- Login Details Card -->
-        <div style="background: #f8fafc; border: 1px solid #e5e7eb; padding: 18px 20px; border-radius: 10px; margin: 25px 0;">
-          <p style="margin: 0; font-weight: bold; color: #111;">Username (Email):</p>
-          <p style="margin: 6px 0 12px; color: #333;">${values.email}</p>
+        <div class="credentials-card" style="background: #f8fafc; border: 1px solid #e5e7eb; padding: 18px 20px; border-radius: 10px; margin: 25px 0;">
+          <p style="margin: 0 0 8px 0; font-weight: bold; color: #111;">Username (Email):</p>
+          <p style="margin: 0 0 16px 0; color: #333; word-break: break-all;">${values.email}</p>
 
-          <p style="margin: 0; font-weight: bold; color: #111;">Password:</p>
-          <p style="margin: 6px 0; color: #333;">${password}</p>
+          <p style="margin: 0 0 8px 0; font-weight: bold; color: #111;">Password:</p>
+          <p style="margin: 0; color: #333; word-break: break-all;">${password}</p>
         </div>
 
         <!-- Instructions -->
-        <p style="color: #444; font-size: 15px; line-height: 1.6;">
+        <p style="color: #444; font-size: 15px; line-height: 1.6; margin: 0 0 15px 0;">
           <strong>Important:</strong> Please change your password after your first login to keep your account secure.
         </p>
 
-        <p style="color: #444; font-size: 15px; line-height: 1.6;">
+        <p style="color: #444; font-size: 15px; line-height: 1.6; margin: 0 0 20px 0;">
           If you face any issues while signing in, our IT support team is here to help — just reply to this email or reach out via the support portal.
         </p>
 
@@ -180,14 +194,14 @@ export default function AddEmployeeDetails() {
         <hr style="border: none; border-top: 1px solid #eee; margin: 30px 0;">
 
         <!-- Signature -->
-        <p style="color: #333; font-size: 15px;">
+        <p class="signature" style="color: #333; font-size: 15px;">
           Cheers,<br>
           <strong>The KeeperNest Team</strong>
         </p>
       </div>
 
       <!-- Footer -->
-      <div style="background: #f9fafb; padding: 15px;">
+      <div class="footer" style="background: #f9fafb; padding: 15px; border-top: 1px solid #e5e7eb;">
         <p style="color: #aaa; font-size: 13px; margin: 0;">
           © ${new Date().getFullYear()} KeeperNest. All rights reserved.
         </p>
@@ -251,18 +265,18 @@ export default function AddEmployeeDetails() {
                       name="fullName"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="text-gray-700 font-medium">Full Name <span className="text-red-500">*</span></FormLabel>
+                          <FormLabel className="text-sm sm:text-base text-gray-700 font-medium">Full Name <span className="text-red-500">*</span></FormLabel>
                           <FormControl>
                             <div className="relative flex items-center">
-                              <User className="absolute left-3.5 h-5 w-5 text-blue-500 z-10" />
+                              <User className="absolute left-3 sm:left-3.5 h-4 sm:h-5 w-4 sm:w-5 text-blue-500 z-10" />
                               <Input
                                 {...field}
-                                placeholder="Enter employee's full name"
-                                className="pl-12 h-11 border-gray-200 focus:ring-blue-100"
+                                placeholder="Enter emp full name"
+                                className="pl-10 sm:pl-12 h-10 sm:h-11 text-sm sm:text-base border-gray-200 focus:ring-blue-100"
                               />
                             </div>
                           </FormControl>
-                          <FormMessage />
+                          <FormMessage className="text-xs sm:text-sm" />
                         </FormItem>
                       )}
                     />
@@ -272,19 +286,19 @@ export default function AddEmployeeDetails() {
                       name="email"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="text-gray-700 font-medium">Email Address <span className="text-red-500">*</span></FormLabel>
+                          <FormLabel className="text-sm sm:text-base text-gray-700 font-medium">Email Address <span className="text-red-500">*</span></FormLabel>
                           <FormControl>
                             <div className="relative flex items-center">
-                              <Mail className="absolute left-3.5 h-5 w-5 text-blue-500 z-10" />
+                              <Mail className="absolute left-3 sm:left-3.5 h-4 sm:h-5 w-4 sm:w-5 text-blue-500 z-10" />
                               <Input
                                 {...field}
                                 type="email"
-                                placeholder="Enter employee's email"
-                                className="pl-12 h-11 border-gray-200 focus:ring-blue-100"
+                                placeholder="Enter emp email"
+                                className="pl-10 sm:pl-12 h-10 sm:h-11 text-sm sm:text-base border-gray-200 focus:ring-blue-100"
                               />
                             </div>
                           </FormControl>
-                          <FormMessage />
+                          <FormMessage className="text-xs sm:text-sm" />
                         </FormItem>
                       )}
                     />
