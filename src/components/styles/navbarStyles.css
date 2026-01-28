@@ -132,6 +132,120 @@
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
+/* Add these styles to navbarStyles.css */
+
+.dropdown-item.theme-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 10px 16px;
+  background: transparent;
+  border: none;
+  color: var(--foreground);
+  text-align: left;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.dropdown-item.theme-toggle:hover {
+  background-color: var(--accent);
+}
+
+.dropdown-item.theme-toggle .flex {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* Rectangular toggle styles */
+.rectangular-toggle {
+  background: transparent;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  outline: none;
+}
+
+.toggle-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.toggle-track {
+  position: relative;
+  width: 80px;
+  height: 32px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  padding: 2px;
+  transition: all 0.3s ease;
+  overflow: hidden;
+  background-color: #e5e7eb; /* gray-200 - same for both modes */
+  border: 1px solid #d1d5db; /* gray-300 */
+}
+
+.toggle-option {
+  position: absolute;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1;
+}
+
+.toggle-option.left {
+  left: 2px;
+}
+
+.toggle-option.right {
+  right: 2px;
+}
+
+.toggle-icon {
+  width: 14px;
+  height: 14px;
+  color: #6b7280; /* gray-500 */
+}
+
+.toggle-slider {
+  position: absolute;
+  width: 36px;
+  height: 28px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 2;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  background-color: white; /* Always white */
+}
+
+.toggle-slider.left {
+  left: 2px;
+  transform: translateX(0);
+}
+
+.toggle-slider.right {
+  left: 2px;
+  transform: translateX(42px);
+}
+
+.slider-icon {
+  width: 14px;
+  height: 14px;
+  color: #374151; /* gray-700 - visible in both light and dark modes */
+}
+
+/* Optional: Add hover effect on the track */
+.toggle-track:hover {
+  background-color: #d1d5db; /* gray-300 on hover */
+}
+
 /* Tablet */
 @media (min-width: 640px) {
   .app-name {

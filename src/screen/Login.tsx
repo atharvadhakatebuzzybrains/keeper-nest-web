@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from 'react'
 import logo from '../assets/images/logo_app.png';
-import { Eye, EyeOff, Mail, Lock, Loader2 } from 'lucide-react';
+import { Eye, EyeOff, Mail, Lock } from 'lucide-react';
 import { account, databases } from '../appwrite/config';
 import { Query } from 'appwrite';
 import { useNavigate } from 'react-router-dom';
 import { roleCache } from '../utils/roleCache';
 import ForgotPasswordModal from '../components/adminComponents/ForgetPasswordModal';
+import AuthLoader from '../components/AuthLoader'; // Import the AuthLoader component
+import { Snackbar, useNotification } from '../components/Alerts';
 
 const Login = () => {
     const [email, setEmail] = useState('');
@@ -16,6 +18,8 @@ const Login = () => {
     const [checkingAuth, setCheckingAuth] = useState(true);
     const [error, setError] = useState('');
     const [modalOpen, setModalOpen] = useState(false);
+
+    const { snackbar, showSnackbar, closeSnackbar } = useNotification();
 
     const navigate = useNavigate();
 
@@ -154,6 +158,7 @@ const Login = () => {
                     ? 'Invalid email or password'
                     : err.message || 'Login failed. Please try again.'
             );
+            showSnackbar('Invalid email or password', 'error');
             roleCache.clear();
         } finally {
             setIsLoading(false);
@@ -166,22 +171,9 @@ const Login = () => {
         }
     };
 
+    // Use the AuthLoader component instead of the old loader
     if (checkingAuth) {
-        return (
-            <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center p-4">
-                <div className="text-center max-w-xs w-full">
-                    <div className="flex flex-col items-center justify-center mb-6">
-                        <img
-                            src={logo}
-                            alt="KeeperNest Logo"
-                            className="w-20 h-20 md:w-24 md:h-24 object-contain mb-4"
-                        />
-                        <h1 className="text-2xl md:text-3xl font-bold text-[#3b82f6]">KeeperNest</h1>
-                    </div>
-                    <Loader2 className="h-8 w-8 md:h-10 md:w-10 animate-spin text-[#3b82f6] mx-auto mb-4" />
-                </div>
-            </div>
-        );
+        return <AuthLoader />;
     }
 
     return (
@@ -338,6 +330,14 @@ const Login = () => {
             <ForgotPasswordModal
                 open={modalOpen}
                 onOpenChange={setModalOpen}
+            />
+
+            <Snackbar
+                isOpen={snackbar.isOpen}
+                onClose={closeSnackbar}
+                message={snackbar.message}
+                type={snackbar.type}
+                duration={4000}
             />
         </div>
     )

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Route, Routes, useNavigate, Navigate } from 'react-router-dom'
 import { roleCache } from '../utils/roleCache';
 import { Query } from 'appwrite';
@@ -7,8 +7,7 @@ import EmployeeDashboard from '../screen/EmployeeDashboard';
 import Profile from '../screen/Profile';
 import AdminDashboard from '../screen/AdminDashboard';
 import NotFound from '../components/NotFound';
-import { Loader2 } from 'lucide-react';
-import logo from '../assets/images/logo_app.png';
+import AuthLoader from '../components/AuthLoader';
 import EmployeeList from '../components/adminComponents/EmployeeList';
 import AddEmployee from '../components/adminComponents/AddEmployee';
 import AddAssets from '../components/adminComponents/AddAssets';
@@ -31,7 +30,10 @@ export default function DashboardRouter() {
                 if (cachedRole) {
                     console.log('Using cached role:', cachedRole);
                     setRole(cachedRole);
-                    setIsLoading(false);
+                    // Wait 5 seconds before hiding loader
+                    setTimeout(() => {
+                        setIsLoading(false);
+                    }, 5000);
                     return;
                 }
 
@@ -57,7 +59,10 @@ export default function DashboardRouter() {
                 roleCache.clear();
                 navigate('/');
             } finally {
-                setIsLoading(false);
+                // Wait 5 seconds before hiding loader on error/completion
+                setTimeout(() => {
+                    setIsLoading(false);
+                }, 5000);
             }
         };
 
@@ -65,21 +70,7 @@ export default function DashboardRouter() {
     }, [navigate]);
 
     if (isLoading) {
-        return (
-            <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center p-4">
-                <div className="text-center max-w-xs w-full">
-                    <div className="flex flex-col items-center justify-center mb-6">
-                        <img
-                            src={logo}
-                            alt="KeeperNest Logo"
-                            className="w-20 h-20 md:w-24 md:h-24 object-contain mb-4"
-                        />
-                        <h1 className="text-2xl md:text-3xl font-bold text-[#3b82f6]">KeeperNest</h1>
-                    </div>
-                    <Loader2 className="h-8 w-8 md:h-10 md:w-10 animate-spin text-[#3b82f6] mx-auto mb-4" />
-                </div>
-            </div>
-        );
+        return <AuthLoader />;
     }
 
     return (

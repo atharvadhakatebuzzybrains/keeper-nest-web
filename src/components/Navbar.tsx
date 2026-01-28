@@ -1,19 +1,21 @@
 import { useState, useRef, useEffect } from "react";
 import { Avatar, AvatarFallback } from "../components/ui/avatar";
-import { User, Settings, LogOut } from "lucide-react";
+import { User, Moon, Sun, LogOut } from "lucide-react";
 import "./styles/navbarStyles.css";
 import { useNavigate } from "react-router-dom";
 import { account } from "../appwrite/config";
 import { roleCache } from "../utils/roleCache";
 import ConfirmModal from "./ConfirmModal";
-import { set } from "zod";
+
 interface props {
   name: string,
   email: string,
   role: string
 }
+
 export default function Navbar({name, email, role}: props) {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [isDarkMode, setIsDarkMode] = useState(false);
   const dropdownRef = useRef(null);
   const profileBtnRef = useRef(null);
   const navigate = useNavigate();
@@ -43,9 +45,10 @@ export default function Navbar({name, email, role}: props) {
     setIsDropdownOpen(!isDropdownOpen);
   };
 
-  const handleMenuItemClick = (action: any) => {
-    console.log(`Clicked: ${action}`);
-    setIsDropdownOpen(false);
+  const toggleDarkMode = () => {
+    setIsDarkMode(!isDarkMode);
+    // You can add functionality here to actually change the theme
+    console.log(`Dark mode: ${!isDarkMode}`);
   };
 
   const handleLogout = async () => {
@@ -116,13 +119,48 @@ export default function Navbar({name, email, role}: props) {
                 <span>Profile</span>
               </button>
               
-              <button 
-                className="dropdown-item"
-                onClick={() => handleMenuItemClick("settings")}
-              >
-                <Settings className="dropdown-item-icon" />
-                <span>Settings</span>
-              </button>
+              <div className="dropdown-item theme-toggle">
+                <div className="flex items-center justify-between w-full">
+                  <div className="flex items-center gap-2">
+                    {isDarkMode ? (
+                      <>
+                        <Sun className="dropdown-item-icon" />
+                        <span>Light Mode</span>
+                      </>
+                    ) : (
+                      <>
+                        <Moon className="dropdown-item-icon" />
+                        <span>Dark Mode</span>
+                      </>
+                    )}
+                  </div>
+                  
+                  {/* Rectangular theme toggle with white slider */}
+                  <button 
+                    className="rectangular-toggle"
+                    onClick={toggleDarkMode}
+                    aria-label={isDarkMode ? "Switch to light mode" : "Switch to dark mode"}
+                  >
+                    <div className="toggle-container">
+                      <div className="toggle-track">
+                        <div className="toggle-option left">
+                          <Moon className="toggle-icon" />
+                        </div>
+                        <div className="toggle-option right">
+                          <Sun className="toggle-icon" />
+                        </div>
+                        <div className={`toggle-slider ${isDarkMode ? 'right' : 'left'}`}>
+                          {isDarkMode ? (
+                            <Sun className="slider-icon" />
+                          ) : (
+                            <Moon className="slider-icon" />
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  </button>
+                </div>
+              </div>
             </div>
 
             <div className="dropdown-divider"></div>
