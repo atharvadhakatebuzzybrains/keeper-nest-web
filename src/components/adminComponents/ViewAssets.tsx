@@ -23,6 +23,7 @@ interface Asset {
   status: any;
   assignedTo: any;
   date: string;
+  history: any[];
 }
 
 const truncateText = (text: any, maxLength: number = 50): string => {
@@ -57,6 +58,7 @@ export default function ViewAssets() {
       status: doc.status,
       assignedTo: doc.assignedTo || 'Not Assigned',
       date: new Date(doc.purchaseDate).toLocaleDateString(),
+      history: doc.historyQueue
     }));
     setAssets(formattedAssets);
     setFilteredAssets(formattedAssets);
@@ -299,7 +301,7 @@ export default function ViewAssets() {
           bordered={true}
           striped={true}
           hoverable={true}
-          onRowClick={(item: any) => navigate(`assetDetails/${item.id}`)}
+          onRowClick={(item: any) => navigate(`assetDetails/${item.id}`, { state: { asset: item } })}
         />
 
         <ConfirmModal
@@ -321,7 +323,6 @@ export default function ViewAssets() {
         />
         <UpdateAssetModal visible={showUpdateModal} asset={selectedAsset} onClose={() => {
           setShowUpdateModal(false);
-          showSnackbar('Asset updated successfully!', 'success');
         }} />
       </div>
     </div>

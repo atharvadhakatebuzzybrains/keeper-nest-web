@@ -131,13 +131,20 @@ export default function CustomDropdown({
             <>
               <span className="truncate">{selectedOption.label}</span>
               {value && !disabled && (
-                <button
+                <div
                   onClick={clearSelection}
-                  className="p-0.5 hover:bg-gray-100 rounded"
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      clearSelection(e as any);
+                    }
+                  }}
+                  role="button"
+                  tabIndex={0}
+                  className="p-0.5 hover:bg-gray-100 rounded cursor-pointer"
                   aria-label="Clear selection"
                 >
                   <X className="h-3 w-3 text-gray-400 hover:text-gray-600" />
-                </button>
+                </div>
               )}
             </>
           ) : (
