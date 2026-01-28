@@ -487,9 +487,6 @@ export default function EmployeeList() {
                   : 'Get started by adding new employees to your directory.'
                 }
               </p>
-              <Button className="bg-blue-600 hover:bg-blue-700 px-6">
-                Add New Employee
-              </Button>
             </CardContent>
           </Card>
         )}
