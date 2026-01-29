@@ -3,9 +3,13 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
+
+  "engines": {
+    "node": ">=20"
+  },
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build",
+    "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview"
   },
@@ -26,7 +30,6 @@
     "crypto-js": "^4.2.0",
     "date-fns": "^4.1.0",
     "dotenv": "^17.2.3",
-    "loadash": "^1.0.0",
     "lodash": "^4.17.23",
     "lucide-react": "^0.562.0",
     "nodemailer": "^7.0.12",
