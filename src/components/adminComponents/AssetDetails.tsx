@@ -37,6 +37,7 @@ export default function AssetDetails() {
   const [loading, setLoading] = useState(true);
   const [assigning, setAssigning] = useState(false);
   const { snackbar, showSnackbar, closeSnackbar } = useNotification();
+  const [uAsset, setUAsset] = useState<any>(null)
   const [parsedHistory, setParsedHistory] = useState<Array<{
     historyId: string;
     employeeId: string;
@@ -74,7 +75,7 @@ export default function AssetDetails() {
                 } else {
                   parsedEntry = entry;
                 }
-                
+
                 return {
                   historyId: parsedEntry.historyId || ID.unique(),
                   employeeId: parsedEntry.employeeId,
@@ -87,7 +88,7 @@ export default function AssetDetails() {
             })
             .filter((entry: any) => entry !== null)
             .sort((a: any, b: any) => new Date(b.assignDate).getTime() - new Date(a.assignDate).getTime());
-          
+
           setParsedHistory(parsed);
         }
 
@@ -124,10 +125,10 @@ export default function AssetDetails() {
     }
 
     setAssigning(true);
-    
+
     try {
       const currentHistory = asset?.history || [];
-      
+
       const newHistoryEntry = JSON.stringify({
         historyId: ID.unique(),
         employeeId: selectedEmployee,
@@ -150,16 +151,16 @@ export default function AssetDetails() {
         history: updatedHistory
       };
       setAsset(updatedAsset);
-      
+
       const newParsedEntry = {
         historyId: ID.unique(),
         employeeId: selectedEmployee,
         assignDate: new Date().toISOString()
       };
       setParsedHistory([newParsedEntry, ...parsedHistory]);
-      
+
       setSelectedEmployee("");
-      
+
       showSnackbar(`Asset assigned successfully to ${selectedEmployee}!`, "success");
     } catch (error) {
       console.error("Error:", error);
@@ -171,6 +172,17 @@ export default function AssetDetails() {
 
   const handleSendToMaintenance = async () => {
     try {
+      if (asset.status === 'Maintainance') {
+        await databases.updateDocument('assetManagement', 'assets', asset.docId, {
+          status: 'Available'
+        });
+
+        setAsset({ ...asset, status: 'Available' });
+
+        showSnackbar("Asset sent to available!", "success");
+        return;
+      }
+
       if (asset.status !== 'Available') {
         showSnackbar('Cannot send asset to maintenance. Please make it available first.', 'error');
         return;
@@ -179,9 +191,9 @@ export default function AssetDetails() {
       await databases.updateDocument('assetManagement', 'assets', asset.docId, {
         status: 'Maintainance'
       });
-      
+
       setAsset({ ...asset, status: 'Maintainance' });
-      
+
       showSnackbar("Asset sent to maintenance!", "success");
     } catch (error) {
       console.error("Error:", error);
@@ -211,14 +223,40 @@ export default function AssetDetails() {
         assignedTo: null,
         status: 'Available'
       });
-      
+
       setAsset({ ...asset, assignedTo: null, status: 'Available' });
-      
+
       showSnackbar("Asset unassigned successfully!", "success");
       setShowUnassignConfirm(false);
     } catch (error) {
       console.error("Error:", error);
       showSnackbar("Failed to unassign asset", "error");
+    }
+  };
+
+  // Update this function to handle modal update properly
+  const handleUpdateSuccess = async () => {
+    try {
+      // Refresh the asset data from database to get updated values
+      const updatedDoc = await databases.getDocument(
+        'assetManagement',
+        'assets',
+        asset.docId
+      );
+
+      // Update local state with the fresh data from database
+      setAsset({
+        ...asset,
+        id: updatedDoc.id || updatedDoc.assetId,
+        asset: updatedDoc.asset || updatedDoc.assetName,
+        desc: updatedDoc.desc || updatedDoc.description,
+      });
+
+      showSnackbar("Asset updated successfully!", "success");
+    } catch (error) {
+      console.error("Error refreshing asset data:", error);
+      // Fallback: show success message anyway since modal already showed it
+      showSnackbar("Asset updated successfully!", "success");
     }
   };
 
@@ -274,16 +312,15 @@ export default function AssetDetails() {
                       {getAssetIcon(asset.type)}
                     </div>
                   </div>
-                  
+
                   <div className="text-center">
                     <h1 className="text-xl font-bold text-gray-900 mb-2 break-words">{asset.asset}</h1>
                     <div className="flex flex-wrap items-center justify-center gap-2 mb-3">
-                      <Badge 
-                        className={`${
-                          asset.status === 'Assigned' ? 'bg-green-100 text-green-800' :
+                      <Badge
+                        className={`${asset.status === 'Assigned' ? 'bg-green-100 text-green-800' :
                           asset.status === 'Available' ? 'bg-blue-100 text-blue-800' :
-                          'bg-yellow-100 text-yellow-800'
-                        } border-0 text-xs`}
+                            'bg-yellow-100 text-yellow-800'
+                          } border-0 text-xs`}
                       >
                         {asset.status === 'Maintainance' ? 'Maintenance' : asset.status}
                       </Badge>
@@ -291,7 +328,7 @@ export default function AssetDetails() {
                         {asset.type}
                       </Badge>
                     </div>
-                    
+
                     <div className="mb-4">
                       <div className="flex items-center justify-center gap-2 bg-blue-50 px-3 py-1.5 rounded-md border border-blue-200">
                         <span className="font-mono text-xs text-blue-700">#{asset.id}</span>
@@ -329,18 +366,17 @@ export default function AssetDetails() {
                   <div className="h-20 w-20 rounded-lg bg-gradient-to-br from-blue-50 to-blue-100 border-2 border-white shadow-sm flex items-center justify-center flex-shrink-0">
                     {getAssetIcon(asset.type)}
                   </div>
-                  
+
                   <div className="flex-1">
                     <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-3">
                       <div>
                         <h1 className="text-2xl font-bold text-gray-900">{asset.asset}</h1>
                         <div className="flex flex-wrap items-center gap-2 mt-2">
-                          <Badge 
-                            className={`${
-                              asset.status === 'Assigned' ? 'bg-green-100 text-green-800 hover:bg-green-100' :
+                          <Badge
+                            className={`${asset.status === 'Assigned' ? 'bg-green-100 text-green-800 hover:bg-green-100' :
                               asset.status === 'Available' ? 'bg-blue-100 text-blue-800 hover:bg-blue-100' :
-                              'bg-yellow-100 text-yellow-800 hover:bg-yellow-100'
-                            } border-0 font-medium`}
+                                'bg-yellow-100 text-yellow-800 hover:bg-yellow-100'
+                              } border-0 font-medium`}
                           >
                             {asset.status === 'Maintainance' ? 'Maintenance' : asset.status}
                           </Badge>
@@ -355,7 +391,7 @@ export default function AssetDetails() {
                         </div>
                       </div>
                     </div>
-                    
+
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
                       <div className="flex items-center gap-3 p-3 rounded-lg border border-gray-200 bg-white hover:bg-blue-50/50 transition-colors">
                         <div className="h-10 w-10 rounded-full bg-blue-50 flex items-center justify-center">
@@ -400,7 +436,7 @@ export default function AssetDetails() {
             <Card className="border-blue-200 shadow-sm">
               <CardContent className="p-4 md:p-6">
                 <h2 className="text-lg font-semibold text-gray-900 mb-4">Assign Asset</h2>
-                
+
                 <div className="space-y-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -418,7 +454,7 @@ export default function AssetDetails() {
                       <p className="text-sm text-gray-500 mt-2">Loading available employees...</p>
                     )}
                   </div>
-                  
+
                   <div className="flex flex-col sm:flex-row gap-2">
                     <Button
                       onClick={handleAssignAsset}
@@ -438,7 +474,7 @@ export default function AssetDetails() {
                       )}
                     </Button>
                   </div>
-                  
+
                   {asset.status === 'Maintainance' && (
                     <div className="p-3 bg-yellow-50 border border-yellow-200 rounded-md">
                       <p className="text-sm text-yellow-800">
@@ -478,8 +514,8 @@ export default function AssetDetails() {
                               {entry.employeeId.split('(')[0]?.trim() || entry.employeeId}
                             </p>
                             <p className="text-sm text-gray-500 truncate">
-                              {entry.employeeId.includes('(') 
-                                ? entry.employeeId.match(/\(([^)]+)\)/)?.[1] || entry.employeeId 
+                              {entry.employeeId.includes('(')
+                                ? entry.employeeId.match(/\(([^)]+)\)/)?.[1] || entry.employeeId
                                 : "No ID"}
                             </p>
                           </div>
@@ -509,19 +545,31 @@ export default function AssetDetails() {
             <Card className="border-blue-200 shadow-sm">
               <CardContent className="p-4 md:p-6">
                 <h2 className="text-lg font-semibold text-gray-900 mb-4">Quick Actions</h2>
-                
+
                 <div className="space-y-3">
                   <Button
                     onClick={handleSendToMaintenance}
-                    disabled={asset.status === 'Maintainance'}
                     className="w-full justify-start border-yellow-200 bg-yellow-50 hover:bg-yellow-100 hover:border-yellow-300 text-yellow-800 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     <Wrench className="h-4 w-4 mr-2" />
-                    {asset.status === 'Maintainance' ? 'In Maintenance' : 'Send to Maintenance'}
+                    {asset.status === 'Maintainance' ? 'Make it Available' : 'Send to Maintenance'}
                   </Button>
 
                   <Button
-                    onClick={() => setShowUpdateModal(true)}
+                    onClick={() => {
+                      // Map the fields properly for UpdateAssetModal
+                      setUAsset({
+                        $id: asset.docId, // Document ID from Appwrite
+                        assetId: asset.id, // Your asset ID field
+                        assetName: asset.asset, // Your asset name field
+                        description: asset.desc || "", // Your description field
+                        status: asset.status,
+                        assetType: asset.type,
+                        assignedTo: asset.assignedTo,
+                        purchaseDate: asset.date
+                      });
+                      setShowUpdateModal(true);
+                    }}
                     className="w-full justify-start border-green-200 bg-green-50 hover:bg-green-100 hover:border-green-300 text-green-800"
                   >
                     <Edit className="h-4 w-4 mr-2" />
@@ -573,9 +621,13 @@ export default function AssetDetails() {
       />
 
       <UpdateAssetModal
-        asset={asset}
+        asset={uAsset}
         visible={showUpdateModal}
-        onClose={() => setShowUpdateModal(false)}
+        onClose={() => {
+          setShowUpdateModal(false);
+          setUAsset(null);
+          handleUpdateSuccess();
+        }}
       />
     </div>
   );

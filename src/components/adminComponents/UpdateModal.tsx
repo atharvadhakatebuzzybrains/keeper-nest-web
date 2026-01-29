@@ -75,7 +75,7 @@ export default function UpdateAssetModal({ asset, visible, onClose }: UpdateAsse
             await databases.updateDocument(
                 'assetManagement',
                 'assets',
-                asset!.$id,
+                asset?.$id,
                 {
                     assetName: assetName.trim(),
                     assetId: assetId.trim(),

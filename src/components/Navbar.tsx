@@ -125,17 +125,16 @@ export default function Navbar({name, email, role}: props) {
                     {isDarkMode ? (
                       <>
                         <Sun className="dropdown-item-icon" />
-                        <span>Light Mode</span>
+                        <span>Theme</span>
                       </>
                     ) : (
                       <>
                         <Moon className="dropdown-item-icon" />
-                        <span>Dark Mode</span>
+                        <span>Theme</span>
                       </>
                     )}
                   </div>
                   
-                  {/* Rectangular theme toggle with white slider */}
                   <button 
                     className="rectangular-toggle"
                     onClick={toggleDarkMode}
