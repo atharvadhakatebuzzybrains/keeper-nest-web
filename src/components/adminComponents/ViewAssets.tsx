@@ -133,7 +133,7 @@ export default function ViewAssets() {
       title: 'Status',
       width: 150,
       render: (item: Asset) => (
-        <span className={`px-3 py-1 rounded-full text-xs font-medium ${item.status === 'Assigned'
+        <span className={`px-3 py-0.5 rounded-full text-xs font-normal ${item.status === 'Assigned'
           ? 'bg-green-100 text-green-800'
           : item.status === 'Available'
             ? 'bg-blue-100 text-blue-800'

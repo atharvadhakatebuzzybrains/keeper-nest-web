@@ -62,7 +62,7 @@ export default function DashboardRouter() {
                 // Wait 5 seconds before hiding loader on error/completion
                 setTimeout(() => {
                     setIsLoading(false);
-                }, 3000);
+                }, 2000);
             }
         };
 
