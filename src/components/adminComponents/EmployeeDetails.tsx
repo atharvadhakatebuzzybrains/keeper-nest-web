@@ -16,6 +16,8 @@ import { databases, functions } from '../../appwrite/config';
 import { ID } from 'appwrite';
 import { Snackbar, useNotification } from '../Alerts';
 import ConfirmModal from '../ConfirmModal';
+import man from '../../assets/images/man.png';
+import woman from '../../assets/images/woman.png';
 
 export default function EmployeeDetails() {
     const location = useLocation();
@@ -113,9 +115,9 @@ export default function EmployeeDetails() {
 
     const getGenderImage = () => {
         if (employee?.gender?.toLowerCase() === 'female') {
-            return '/src/assets/images/woman.png';
+            return woman;
         }
-        return '/src/assets/images/man.png';
+        return man;
     };
 
     const handleAssignAsset = async () => {

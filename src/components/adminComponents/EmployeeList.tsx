@@ -14,6 +14,8 @@ import { Input } from '../ui/input';
 import { account } from '../../appwrite/config';
 import { useNavigate } from 'react-router-dom';
 import { FaArrowLeft, FaSearch, FaTimes } from 'react-icons/fa';
+import man from '../../assets/images/man.png';
+import woman from '../../assets/images/woman.png';
 
 export default function EmployeeList() {
   const [employees, setEmployees] = useState<any[]>([]);
@@ -210,7 +212,7 @@ export default function EmployeeList() {
           <div className="flex items-start gap-4">
             <Avatar className="h-14 w-14 sm:h-16 sm:w-16 border-2 border-white shadow-lg flex-shrink-0 group-hover:border-blue-100 transition-colors duration-200 rounded-none overflow-hidden">
               <AvatarImage
-                src={employee.gender?.toLowerCase() === 'female' ? '/src/assets/images/woman.png' : '/src/assets/images/man.png'}
+                src={employee.gender?.toLowerCase() === 'female' ? woman : man}
                 alt={employee.name}
                 className="object-cover"
               />
