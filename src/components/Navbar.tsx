@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 import { account } from "../appwrite/config";
 import { roleCache } from "../utils/roleCache";
 import ConfirmModal from "./ConfirmModal";
+import logoApp from '../assets/images/logo_app.png';
 
 interface props {
   name: string,
@@ -68,7 +69,7 @@ export default function Navbar({name, email, role}: props) {
         <div className="logo-container">
           <div className="logo-icon">
             <img 
-              src="/src/assets/images/logo_app.png" 
+              src={logoApp} 
               alt="KeeperNest Logo" 
               className="logo-image"
               onError={(e) => {
