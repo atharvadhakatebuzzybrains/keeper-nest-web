@@ -51,7 +51,7 @@ const EditProfileModal = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="w-[calc(100%-32px)] max-w-md mx-auto p-0 sm:p-6 my-4 sm:my-0">
+      <DialogContent className="w-[calc(100%-32px)] rounded-xl max-w-md mx-auto p-0 sm:p-6 my-4 sm:my-0">
         <DialogHeader className="px-4 sm:px-6 pt-4 sm:pt-0 pb-4">
           <DialogTitle>Edit Profile</DialogTitle>
         </DialogHeader>
