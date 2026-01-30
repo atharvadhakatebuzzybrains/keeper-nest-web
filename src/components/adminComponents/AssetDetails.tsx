@@ -210,7 +210,7 @@ export default function AssetDetails() {
 
       await databases.deleteDocument('assetManagement', 'assets', asset.docId);
       showSnackbar("Asset deleted successfully!", "success");
-      navigate('/dashboard/assets');
+      navigate(-1);
     } catch (error) {
       console.error("Error:", error);
       showSnackbar("Failed to delete asset", "error");
@@ -354,14 +354,13 @@ export default function AssetDetails() {
                       <div className="min-w-0 flex-1">
                         <p className="text-xs font-medium text-gray-700">Assigned To</p>
                         <p className={`text-sm font-semibold ${asset.assignedTo === 'Not Assigned' ? 'text-gray-400' : 'text-gray-900'}`}>
-                          {asset.assignedTo}
+                          {asset.assignedTo === 'unassigned' ? '-' : asset.assignedTo}
                         </p>
                       </div>
                     </div>
                   </div>
                 </div>
 
-                {/* Desktop/Tablet Layout (Flex Row) */}
                 <div className="hidden md:flex flex-col lg:flex-row items-start gap-4 lg:gap-6 mb-6">
                   <div className="h-20 w-20 rounded-lg bg-gradient-to-br from-blue-50 to-blue-100 border-2 border-white shadow-sm flex items-center justify-center flex-shrink-0">
                     {getAssetIcon(asset.type)}
@@ -409,9 +408,15 @@ export default function AssetDetails() {
                         </div>
                         <div>
                           <p className="text-sm font-medium text-gray-700">Assigned To</p>
-                          <p className={`text-base font-semibold ${asset.assignedTo === 'Not Assigned' ? 'text-gray-400' : 'text-gray-900'}`}>
-                            {asset.assignedTo}
+                          <p
+                            className={`text-sm font-semibold ${asset.assignedTo === 'Not Assigned'
+                                ? 'text-gray-400'
+                                : 'text-gray-900'
+                              }`}
+                          >
+                            {asset.assignedTo === 'unassigned' ? '-' : asset.assignedTo}
                           </p>
+
                         </div>
                       </div>
                     </div>
