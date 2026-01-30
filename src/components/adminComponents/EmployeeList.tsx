@@ -14,8 +14,6 @@ import { Input } from '../ui/input';
 import { account } from '../../appwrite/config';
 import { useNavigate } from 'react-router-dom';
 import { FaArrowLeft, FaSearch, FaTimes } from 'react-icons/fa';
-import man from '../../assets/images/man.png';
-import woman from '../../assets/images/woman.png';
 
 export default function EmployeeList() {
   const [employees, setEmployees] = useState<any[]>([]);
@@ -200,7 +198,7 @@ export default function EmployeeList() {
 
   const EmployeeCard = ({ employee }: { employee: any }) => (
     <Card
-      className="h-full border border-gray-200 bg-white shadow-sm hover:shadow-lg transition-all duration-200 hover:-translate-y-1 cursor-pointer group overflow-hidden"
+      className="h-full border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800/50 shadow-sm hover:shadow-md transition-all duration-200 cursor-pointer group overflow-hidden"
       onClick={() => navigate(`employeeDetails/${employee.employeeId}`,
         {
           state: { employee }
@@ -208,11 +206,11 @@ export default function EmployeeList() {
       )}
     >
       <CardContent className="p-0 flex flex-col h-full">
-        <div className="px-4 sm:px-5 py-4 sm:py-5 border-b border-blue-50 bg-gradient-to-r from-blue-50 to-blue-100/50">
+        <div className="px-4 sm:px-5 py-4 sm:py-5 border-b border-blue-50 dark:border-slate-700 bg-gradient-to-r from-blue-50 to-blue-100/50 dark:from-slate-800 dark:to-slate-700/50">
           <div className="flex items-start gap-4">
-            <Avatar className="h-14 w-14 sm:h-16 sm:w-16 border-2 border-white shadow-lg flex-shrink-0 group-hover:border-blue-100 transition-colors duration-200 rounded-none overflow-hidden">
+            <Avatar className="h-14 w-14 sm:h-16 sm:w-16 border-2 border-white dark:border-slate-600 shadow-sm flex-shrink-0 rounded-none overflow-hidden">
               <AvatarImage
-                src={employee.gender?.toLowerCase() === 'female' ? woman : man}
+                src={employee.gender?.toLowerCase() === 'female' ? '/src/assets/images/woman.png' : '/src/assets/images/man.png'}
                 alt={employee.name}
                 className="object-cover"
               />
@@ -223,12 +221,12 @@ export default function EmployeeList() {
 
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2">
-                <h3 className="text-sm sm:text-base font-semibold text-gray-900 truncate group-hover:text-blue-700 transition-colors duration-200">
+                <h3 className="text-sm sm:text-base font-semibold text-gray-900 dark:text-gray-100 truncate group-hover:text-blue-700 dark:group-hover:text-blue-400 transition-colors duration-200">
                   {employee.name}
                 </h3>
               </div>
               <div className="mt-2 flex items-center gap-2">
-                <Badge variant="outline" className="font-mono text-xs bg-white text-blue-600 border-blue-300 px-2 py-0 h-5 font-semibold">
+                <Badge variant="outline" className="font-mono text-xs bg-white/50 dark:bg-slate-800/50 text-blue-600 dark:text-blue-400 border-blue-200 dark:border-blue-800 px-2 py-0 h-5 font-semibold">
                   #{employee.employeeId}
                 </Badge>
               </div>
@@ -238,24 +236,24 @@ export default function EmployeeList() {
 
         <div className="px-4 sm:px-5 py-4 flex-1 flex flex-col justify-between gap-4">
           <div className="space-y-4">
-            <div className="flex items-center gap-3 p-2 rounded-lg hover:bg-blue-50/50 transition-colors duration-150">
-              <div className="h-9 w-9 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0 group-hover:bg-blue-200 transition-colors duration-200">
-                <Mail className="h-4 w-4 text-blue-600" />
+            <div className="flex items-center gap-3 p-2 rounded-lg hover:bg-blue-50/50 dark:hover:bg-blue-900/10 transition-colors duration-150">
+              <div className="h-9 w-9 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center flex-shrink-0 group-hover:bg-blue-200 dark:group-hover:bg-blue-800/50 transition-colors duration-200">
+                <Mail className="h-4 w-4 text-blue-600 dark:text-blue-400" />
               </div>
               <div className="min-w-0 flex-1">
-                <p className="text-sm text-gray-700 truncate" title={employee.email}>
+                <p className="text-sm text-gray-700 dark:text-gray-300 truncate" title={employee.email}>
                   {employee.email}
                 </p>
               </div>
             </div>
 
             {employee.phone && (
-              <div className="flex items-center gap-3 p-2 rounded-lg hover:bg-blue-50/50 transition-colors duration-150">
-                <div className="h-9 w-9 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0 group-hover:bg-blue-200 transition-colors duration-200">
-                  <Phone className="h-4 w-4 text-blue-600" />
+              <div className="flex items-center gap-3 p-2 rounded-lg hover:bg-blue-50/50 dark:hover:bg-blue-900/10 transition-colors duration-150">
+                <div className="h-9 w-9 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center flex-shrink-0 group-hover:bg-blue-200 dark:group-hover:bg-blue-800/50 transition-colors duration-200">
+                  <Phone className="h-4 w-4 text-blue-600 dark:text-blue-400" />
                 </div>
                 <div className="min-w-0 flex-1">
-                  <p className="text-sm text-gray-700 truncate">
+                  <p className="text-sm text-gray-700 dark:text-gray-300 truncate">
                     {employee.phone}
                   </p>
                   <p className="text-xs text-gray-500 mt-0.5">Phone</p>
@@ -266,10 +264,10 @@ export default function EmployeeList() {
             <div className="grid grid-cols-2 gap-4 pt-2 border-t border-gray-100">
               <div className="space-y-1">
                 <div className="flex items-center gap-1">
-                  <Calendar className="h-3 w-3 text-blue-500" />
-                  <div className="text-xs text-gray-500">Joined</div>
+                  <Calendar className="h-3 w-3 text-blue-500 dark:text-blue-400" />
+                  <div className="text-xs text-gray-500 dark:text-gray-400">Joined</div>
                 </div>
-                <div className="text-sm font-semibold text-gray-900">
+                <div className="text-sm font-semibold text-gray-900 dark:text-gray-100">
                   {new Date(employee.$createdAt).toLocaleDateString('en-US', {
                     month: 'short',
                     day: 'numeric',
@@ -280,10 +278,10 @@ export default function EmployeeList() {
 
               <div className="space-y-1">
                 <div className="flex items-center gap-1">
-                  <UserPlus className="h-3 w-3 text-blue-500" />
-                  <div className="text-xs text-gray-500">Created By</div>
+                  <UserPlus className="h-3 w-3 text-blue-500 dark:text-blue-400" />
+                  <div className="text-xs text-gray-500 dark:text-gray-400">Created By</div>
                 </div>
-                <div className="text-sm font-semibold text-gray-900 truncate" title={employee.creatorMail || 'Admin'}>
+                <div className="text-sm font-semibold text-gray-900 dark:text-gray-100 truncate" title={employee.creatorMail || 'Admin'}>
                   {employee.creatorMail?.split('@')[0] || 'Admin'}
                 </div>
               </div>
@@ -335,8 +333,8 @@ export default function EmployeeList() {
   );
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-blue-50/30 to-white">
-      <div className="w-full bg-white border-b border-gray-100 shadow-sm sticky top-0 z-50">
+    <div className="min-h-screen bg-gradient-to-b from-blue-50/30 to-white dark:from-slate-900 dark:to-slate-900">
+      <div className="w-full bg-white dark:bg-slate-900 border-b border-gray-100 dark:border-slate-700 shadow-sm sticky top-0 z-50">
         <div className="flex items-center justify-between px-4 sm:px-6 py-4">
           <div className="flex items-center gap-3 min-w-0 flex-1">
             <button
@@ -349,10 +347,10 @@ export default function EmployeeList() {
 
             {(!isSearchActive) && (
               <div className="min-w-0 flex-1">
-                <h1 className="text-lg font-semibold text-gray-800 truncate">
+                <h1 className="text-lg font-semibold text-gray-800 dark:text-gray-100 truncate">
                   Employee Directory
                 </h1>
-                <p className="text-sm text-gray-500 truncate">
+                <p className="text-sm text-gray-500 dark:text-gray-400 truncate">
                   Manage and view employee information
                 </p>
               </div>
@@ -366,16 +364,16 @@ export default function EmployeeList() {
                     placeholder="Search employees..."
                     value={inputValue}
                     onChange={(e) => handleSearchChange(e.target.value)}
-                    className="w-full px-4 py-2 pl-10 pr-10 rounded-lg border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-4 py-2 pl-10 pr-10 rounded-lg border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-gray-900 dark:text-gray-100 dark:placeholder-slate-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     autoFocus
                   />
-                  <div className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400">
+                  <div className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-slate-500">
                     <Search size={16} />
                   </div>
                   {inputValue && (
                     <button
                       onClick={handleClearSearch}
-                      className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                      className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-slate-500 hover:text-gray-600 dark:hover:text-slate-300 transition-colors"
                       aria-label="Clear search"
                     >
                       <X size={16} />
@@ -394,15 +392,15 @@ export default function EmployeeList() {
                   placeholder="Search employees..."
                   value={inputValue}
                   onChange={(e) => handleSearchChange(e.target.value)}
-                  className="w-full px-4 py-2 pl-10 pr-10 rounded-lg border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-4 py-2 pl-10 pr-10 rounded-lg border border-gray-300 dark:border-slate-600 dark:bg-slate-800 dark:text-gray-100 dark:placeholder-slate-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
-                <div className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400">
+                <div className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-slate-500">
                   <Search size={16} />
                 </div>
                 {inputValue && (
                   <button
                     onClick={handleClearSearch}
-                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-slate-500 hover:text-gray-600 dark:hover:text-slate-300 transition-colors"
                     aria-label="Clear search"
                   >
                     <X size={16} />
@@ -415,7 +413,7 @@ export default function EmployeeList() {
           <div className="flex items-center gap-3 flex-shrink-0">
             <button
               onClick={toggleSearch}
-              className="sm:hidden p-2 hover:bg-gray-100 rounded-lg transition-colors text-gray-600"
+              className="sm:hidden p-2 hover:bg-gray-100 dark:hover:bg-slate-800 rounded-lg transition-colors text-gray-600 dark:text-gray-300"
               aria-label={isSearchActive ? "Close search" : "Open search"}
             >
               {isSearchActive ? <X size={20} /> : <Search size={20} />}
@@ -500,17 +498,17 @@ export default function EmployeeList() {
               size="sm"
               onClick={handlePrevPage}
               disabled={page === 1}
-              className="gap-1 border-blue-200 hover:border-blue-400 hover:bg-blue-50 text-blue-600 hover:text-blue-700 px-3"
+              className="gap-1 border-blue-200 dark:border-slate-700 hover:border-blue-400 dark:hover:border-slate-600 hover:bg-blue-50 dark:hover:bg-slate-800 text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 px-3 transition-colors"
             >
               <ChevronLeft className="h-4 w-4" />
               <span>Previous</span>
             </Button>
 
-            <div className="flex items-center gap-1 bg-blue-50 px-3 py-1 rounded-md">
-              <span className="text-sm text-gray-600">Page</span>
-              <span className="mx-1 font-semibold text-blue-600">{page}</span>
-              <span className="text-sm text-gray-600">of</span>
-              <span className="ml-1 font-semibold text-blue-600">{totalPages}</span>
+            <div className="flex items-center gap-1 bg-blue-50 dark:bg-slate-800 px-3 py-1 rounded-md border border-transparent dark:border-slate-700">
+              <span className="text-sm text-gray-600 dark:text-gray-400">Page</span>
+              <span className="mx-1 font-semibold text-blue-600 dark:text-blue-400">{page}</span>
+              <span className="text-sm text-gray-600 dark:text-gray-400">of</span>
+              <span className="ml-1 font-semibold text-blue-600 dark:text-blue-400">{totalPages}</span>
             </div>
 
             <Button
@@ -518,7 +516,7 @@ export default function EmployeeList() {
               size="sm"
               onClick={handleNextPage}
               disabled={page === totalPages}
-              className="gap-1 border-blue-200 hover:border-blue-400 hover:bg-blue-50 text-blue-600 hover:text-blue-700 px-3"
+              className="gap-1 border-blue-200 dark:border-slate-700 hover:border-blue-400 dark:hover:border-slate-600 hover:bg-blue-50 dark:hover:bg-slate-800 text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 px-3 transition-colors"
             >
               <span>Next</span>
               <ChevronRight className="h-4 w-4" />

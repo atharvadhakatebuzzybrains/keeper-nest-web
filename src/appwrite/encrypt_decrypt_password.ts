@@ -29,7 +29,7 @@ export const encrypt = (text) => {
   }
 };
 
-export const decrypt = (encryptedText) => {
+export const decrypt = (encryptedText: string) => {
   try {
     console.log("Decrypting text...");
     
@@ -63,7 +63,7 @@ export const decrypt = (encryptedText) => {
   }
 };
 
-export const encryptWithIV = (text) => {
+export const encryptWithIV = (text: string) => {
   try {
     const iv = CryptoJS.lib.WordArray.random(16);
     
@@ -86,7 +86,7 @@ export const encryptWithIV = (text) => {
   }
 };
 
-export const decryptWithIV = (encryptedData) => {
+export const decryptWithIV = (encryptedData: string) => {
   try {
     // Extract IV (first 32 characters hex = 16 bytes)
     const iv = CryptoJS.enc.Hex.parse(encryptedData.substr(0, 32));
