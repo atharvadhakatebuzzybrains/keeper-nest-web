@@ -149,7 +149,7 @@ export default function ViewAssets() {
       width: 150,
       render: (item: Asset) => (
         <span title={String(item.assignedTo)}>
-          {truncateText(item.assignedTo, 25)}
+          {item.assignedTo === 'unassigned' ? '-' : truncateText(item.assignedTo, 25)}
         </span>
       )
     },
