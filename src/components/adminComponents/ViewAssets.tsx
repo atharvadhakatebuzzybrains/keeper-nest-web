@@ -15,8 +15,8 @@ import UpdateAssetModal from './UpdateModal';
 import { Snackbar, useNotification } from '../Alerts';
 
 interface Asset {
-  id: any;         
-  docId: string;    
+  id: any;
+  docId: string;
   asset: any;
   desc: any;
   type: any;
@@ -53,7 +53,7 @@ export default function ViewAssets() {
       id: doc.assetId,
       docId: doc.$id,
       asset: doc.name || doc.assetName || 'N/A',
-      desc: doc.description || 'No description',
+      desc: doc.description || '-',
       type: doc.assetType,
       status: doc.status,
       assignedTo: doc.assignedTo || 'Not Assigned',
@@ -76,7 +76,15 @@ export default function ViewAssets() {
     let filtered = [...assets];
 
     if (statusFilter && statusFilter !== 'all') {
-      filtered = filtered.filter(asset => asset.status === statusFilter);
+      if (statusFilter === 'Available') {
+        filtered = filtered.filter(asset => asset.status === 'Available' || asset.status === 'Available-O');
+      } else if (statusFilter === 'Assigned') {
+        filtered = filtered.filter(asset => asset.status === 'Assigned' || asset.status === 'Assigned-O');
+      } else if (statusFilter === 'Maintenance') {
+        filtered = filtered.filter(asset => asset.status === 'Maintainance' || asset.status === 'Damaged');
+      } else {
+        filtered = filtered.filter(asset => asset.status === statusFilter);
+      }
     }
 
     if (typeFilter && typeFilter !== 'all') {
@@ -133,11 +141,13 @@ export default function ViewAssets() {
       title: 'Status',
       width: 150,
       render: (item: Asset) => (
-        <span className={`px-3 py-0.5 rounded-full text-xs font-normal ${item.status === 'Assigned'
+        <span className={`px-3 py-0.5 rounded-full text-xs font-normal ${item.status === 'Assigned' || item.status === 'Assigned-O'
           ? 'bg-green-100 text-green-800'
-          : item.status === 'Available'
+          : item.status === 'Available' || item.status === 'Available-O'
             ? 'bg-blue-100 text-blue-800'
-            : 'bg-yellow-100 text-yellow-800'
+            : item.status === 'Damaged'
+              ? 'bg-red-100 text-red-800'
+              : 'bg-yellow-100 text-yellow-800'
           }`}>
           {item.status === 'Maintainance' ? 'Maintenance' : item.status}
         </span>
@@ -196,7 +206,7 @@ export default function ViewAssets() {
                        rounded-lg text-sm font-medium transition-colors duration-200 
                        flex items-center space-x-1"
 
-            // disabled={item.status === 'Assigned'}
+          // disabled={item.status === 'Assigned'}
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
@@ -212,7 +222,8 @@ export default function ViewAssets() {
   const handleDeleteAsset = async () => {
     if (!confirmDeleteAssetId) return;
 
-    if(assets.find(asset => asset.docId === confirmDeleteAssetId)?.status !== 'Available') {
+    const assetToDelete = assets.find(asset => asset.docId === confirmDeleteAssetId);
+    if (assetToDelete?.status !== 'Available' && assetToDelete?.status !== 'Available-O') {
       showSnackbar('Cannot delete asset. Please make available first.', 'error');
       setShowConfirmDelete(false);
       setConfirmDeleteAssetId(null);

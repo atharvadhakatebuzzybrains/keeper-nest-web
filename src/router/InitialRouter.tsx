@@ -5,6 +5,7 @@ import Signup from '../screen/Signup'
 import { account } from '../appwrite/config';
 import NotFound from '../components/NotFound';
 import Alerts from '../components/Alerts';
+import SuperAdmin from '../components/SuperAdmin';
 
 export default function InitialRouter() {
   const navigate = useNavigate();
@@ -28,6 +29,7 @@ export default function InitialRouter() {
       <Route path="/" element={<Login />} />
       <Route path="/signup" element={<Signup />} />
       <Route path="/alerts" element={<Alerts />} />
+      <Route path="/superAdmin/:employeeId" element={<SuperAdmin/>} />
       <Route path='*' element={<NotFound />} />
     </Routes>
   )

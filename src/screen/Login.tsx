@@ -140,6 +140,12 @@ const Login = () => {
             }
 
             const employeeData = response.documents[0];
+
+            if (employeeData.status !== 'active') {
+                await account.deleteSession('current');
+                throw new Error('Your account is not active. Please contact support.');
+            }
+
             const role = employeeData.role;
 
             roleCache.setRole(role as 'admin' | 'employee');
@@ -158,7 +164,12 @@ const Login = () => {
                     ? 'Invalid email or password'
                     : err.message || 'Login failed. Please try again.'
             );
-            showSnackbar('Invalid email or password', 'error');
+            showSnackbar(
+                err.code === 401
+                    ? 'Invalid email or password'
+                    : err.message || 'Login failed. Please try again.',
+                'error'
+            );
             roleCache.clear();
         } finally {
             setIsLoading(false);
@@ -171,7 +182,6 @@ const Login = () => {
         }
     };
 
-    // Use the AuthLoader component instead of the old loader
     if (checkingAuth) {
         return <AuthLoader />;
     }
