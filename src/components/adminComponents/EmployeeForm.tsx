@@ -358,11 +358,11 @@ export default function AddEmployeeDetails() {
                   >
                     {isLoading ? (
                       <>
-                        <Loader2 className="mr-2 h-5 w-5 animate-spin" /> Creating...
+                        <Loader2 className="mr-2 h-5 w-5 animate-spin" /> Adding...
                       </>
                     ) : (
                       <>
-                        <RefreshCcw className="mr-2 h-5 w-5" /> Create Employee
+                        <RefreshCcw className="mr-2 h-5 w-5" /> Add Employee
                       </>
                     )}
                   </Button>

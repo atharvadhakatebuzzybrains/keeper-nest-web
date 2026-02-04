@@ -64,9 +64,9 @@ export default function AdminDashboard() {
       );
 
       const assets = assetsResponse.documents;
-      const availableAssets = assets.filter(asset => asset.status === 'Available').length;
-      const assignedAssets = assets.filter(asset => asset.status === 'Assigned').length;
-      const maintainanceAssets = assets.filter(asset => asset.status === 'Maintainance').length;
+      const availableAssets = assets.filter(asset => asset.status === 'Available' || asset.status === 'Available-O').length;
+      const assignedAssets = assets.filter(asset => asset.status === 'Assigned' || asset.status === 'Assigned-O').length;
+      const maintainanceAssets = assets.filter(asset => asset.status === 'Maintainance' || asset.status === 'Damaged').length;
 
       setStats({
         totalEmployees: employeesResponse.total,

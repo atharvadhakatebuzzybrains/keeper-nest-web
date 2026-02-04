@@ -19,6 +19,7 @@ import {
   Laptop,
   Keyboard,
   Mouse,
+  RefreshCcw,
 } from "lucide-react";
 import { databases } from "../../appwrite/config";
 import { ID } from "appwrite";
@@ -170,6 +171,57 @@ export default function AssetDetails() {
     }
   };
 
+  const handleMarkDamaged = async () => {
+    try {
+      if (asset.status === 'Damaged') {
+        await databases.updateDocument('assetManagement', 'assets', asset.docId, {
+          status: 'Available'
+        });
+
+        setAsset({ ...asset, status: 'Available' });
+
+        showSnackbar("Asset sent to available!", "success");
+        return;
+      }
+
+      if (asset.status !== 'Available' && asset.status !== 'Available-O') {
+        showSnackbar('Cannot mark asset as damaged. Please make it available first.', 'error');
+        return;
+      }
+
+      await databases.updateDocument('assetManagement', 'assets', asset.docId, {
+        status: 'Damaged'
+      });
+
+      setAsset({ ...asset, status: 'Damaged' });
+
+      showSnackbar("Asset sent to Damaged!", "success");
+    } catch (error) {
+      console.error("Error:", error);
+      showSnackbar("Failed to send to Damaged", "error");
+    }
+  };
+
+  const handleToggleStatusOSuffix = async () => {
+    try {
+      let newStatus = asset.status;
+      if (asset.status === 'Available') newStatus = 'Available-O';
+      else if (asset.status === 'Available-O') newStatus = 'Available';
+      else if (asset.status === 'Assigned') newStatus = 'Assigned-O';
+      else if (asset.status === 'Assigned-O') newStatus = 'Assigned';
+      else return;
+
+      await databases.updateDocument('assetManagement', 'assets', asset.docId, {
+        status: newStatus
+      });
+      setAsset({ ...asset, status: newStatus });
+      showSnackbar(`Asset status updated to ${newStatus}!`, "success");
+    } catch (error) {
+      console.error("Error:", error);
+      showSnackbar("Failed to update status", "error");
+    }
+  };
+
   const handleSendToMaintenance = async () => {
     try {
       if (asset.status === 'Maintainance') {
@@ -183,7 +235,7 @@ export default function AssetDetails() {
         return;
       }
 
-      if (asset.status !== 'Available') {
+      if (asset.status !== 'Available' && asset.status !== 'Available-O') {
         showSnackbar('Cannot send asset to maintenance. Please make it available first.', 'error');
         return;
       }
@@ -203,7 +255,7 @@ export default function AssetDetails() {
 
   const handleDeleteAsset = async () => {
     try {
-      if (asset.status !== 'Available') {
+      if (asset.status !== 'Available' && asset.status !== 'Available-O') {
         showSnackbar('Cannot delete asset. Please make it available first.', 'error');
         return;
       }
@@ -234,17 +286,14 @@ export default function AssetDetails() {
     }
   };
 
-  // Update this function to handle modal update properly
   const handleUpdateSuccess = async () => {
     try {
-      // Refresh the asset data from database to get updated values
       const updatedDoc = await databases.getDocument(
         'assetManagement',
         'assets',
         asset.docId
       );
 
-      // Update local state with the fresh data from database
       setAsset({
         ...asset,
         id: updatedDoc.id || updatedDoc.assetId,
@@ -252,11 +301,10 @@ export default function AssetDetails() {
         desc: updatedDoc.desc || updatedDoc.description,
       });
 
-      showSnackbar("Asset updated successfully!", "success");
+      // showSnackbar("Asset updated successfully!", "success");
     } catch (error) {
       console.error("Error refreshing asset data:", error);
-      // Fallback: show success message anyway since modal already showed it
-      showSnackbar("Asset updated successfully!", "success");
+      // showSnackbar("Asset updated successfully!", "success");
     }
   };
 
@@ -318,11 +366,13 @@ export default function AssetDetails() {
                     <div className="flex flex-wrap items-center justify-center gap-2 mb-3">
                       <Badge
                         className={`${asset.status === 'Assigned' ? 'bg-green-100 text-green-800' :
-                          asset.status === 'Available' ? 'bg-blue-100 text-blue-800' :
-                            'bg-yellow-100 text-yellow-800'
+                          asset.status === 'Available' || asset.status === 'Available-O' ? 'bg-blue-100 text-blue-800' :
+                            asset.status === 'Damaged' ? 'bg-red-100 text-red-800' :
+                              'bg-yellow-100 text-yellow-800'
                           } border-0 text-xs`}
                       >
-                        {asset.status === 'Maintainance' ? 'Maintenance' : asset.status}
+                        {asset.status === 'Maintainance' ? 'Maintenance' :
+                          asset.status === 'Damaged' ? 'Damaged' : asset.status}
                       </Badge>
                       <Badge variant="outline" className="text-xs bg-white text-blue-700 border-blue-300">
                         {asset.type}
@@ -373,11 +423,13 @@ export default function AssetDetails() {
                         <div className="flex flex-wrap items-center gap-2 mt-2">
                           <Badge
                             className={`${asset.status === 'Assigned' ? 'bg-green-100 text-green-800 hover:bg-green-100' :
-                              asset.status === 'Available' ? 'bg-blue-100 text-blue-800 hover:bg-blue-100' :
-                                'bg-yellow-100 text-yellow-800 hover:bg-yellow-100'
+                              asset.status === 'Available' || asset.status === 'Available-O' ? 'bg-blue-100 text-blue-800 hover:bg-blue-100' :
+                                asset.status === 'Damaged' ? 'bg-red-100 text-red-800 hover:bg-red-100' :
+                                  'bg-yellow-100 text-yellow-800 hover:bg-yellow-100'
                               } border-0 font-medium`}
                           >
-                            {asset.status === 'Maintainance' ? 'Maintenance' : asset.status}
+                            {asset.status === 'Maintainance' ? 'Maintenance' :
+                              asset.status === 'Damaged' ? 'Damaged' : asset.status}
                           </Badge>
                           <Badge variant="outline" className="bg-white text-blue-700 border-blue-300">
                             {asset.type}
@@ -410,8 +462,8 @@ export default function AssetDetails() {
                           <p className="text-sm font-medium text-gray-700">Assigned To</p>
                           <p
                             className={`text-sm font-semibold ${asset.assignedTo === 'Not Assigned'
-                                ? 'text-gray-400'
-                                : 'text-gray-900'
+                              ? 'text-gray-400'
+                              : 'text-gray-900'
                               }`}
                           >
                             {asset.assignedTo === 'unassigned' ? '-' : asset.assignedTo}
@@ -561,13 +613,31 @@ export default function AssetDetails() {
                   </Button>
 
                   <Button
+                    onClick={handleMarkDamaged}
+                    className="w-full justify-start border-red-200 bg-red-50 hover:bg-red-100 hover:border-red-300 text-red-800"
+                  >
+                    <Wrench className="h-4 w-4 mr-2" />
+                    {asset.status === 'Damaged' ? 'Mark as Available' : 'Mark as Damaged'}
+                  </Button>
+
+                  {(asset.status === 'Available' || asset.status === 'Available-O' ||
+                    asset.status === 'Assigned' || asset.status === 'Assigned-O') && (
+                      <Button
+                        onClick={handleToggleStatusOSuffix}
+                        className="w-full justify-start border-blue-200 bg-blue-50 hover:bg-blue-100 hover:border-blue-300 text-blue-800"
+                      >
+                        <RefreshCcw className="h-4 w-4 mr-2" />
+                        {asset.status.endsWith('-O') ? 'Mark as In Office' : 'Mark as Out of Office'}
+                      </Button>
+                    )}
+
+                  <Button
                     onClick={() => {
-                      // Map the fields properly for UpdateAssetModal
                       setUAsset({
-                        $id: asset.docId, // Document ID from Appwrite
-                        assetId: asset.id, // Your asset ID field
-                        assetName: asset.asset, // Your asset name field
-                        description: asset.desc || "", // Your description field
+                        $id: asset.docId,
+                        assetId: asset.id,
+                        assetName: asset.asset,
+                        description: asset.desc || "",
                         status: asset.status,
                         assetType: asset.type,
                         assignedTo: asset.assignedTo,
