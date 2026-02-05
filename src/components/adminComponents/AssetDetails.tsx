@@ -375,7 +375,7 @@ export default function AssetDetails() {
                           asset.status === 'Damaged' ? 'Damaged' : asset.status}
                       </Badge>
                       <Badge variant="outline" className="text-xs bg-white text-blue-700 border-blue-300">
-                        {asset.type}
+                        {asset.type === 'Laptop' && asset.osType ? `Laptop (${asset.osType})` : asset.type}
                       </Badge>
                     </div>
 
@@ -432,7 +432,7 @@ export default function AssetDetails() {
                               asset.status === 'Damaged' ? 'Damaged' : asset.status}
                           </Badge>
                           <Badge variant="outline" className="bg-white text-blue-700 border-blue-300">
-                            {asset.type}
+                            {asset.type === 'Laptop' && asset.osType ? `Laptop (${asset.osType})` : asset.type}
                           </Badge>
                         </div>
                       </div>
@@ -640,6 +640,7 @@ export default function AssetDetails() {
                         description: asset.desc || "",
                         status: asset.status,
                         assetType: asset.type,
+                        osType: asset.osType,
                         assignedTo: asset.assignedTo,
                         purchaseDate: asset.date
                       });
