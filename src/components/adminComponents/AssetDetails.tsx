@@ -22,10 +22,11 @@ import {
   RefreshCcw,
 } from "lucide-react";
 import { databases } from "../../appwrite/config";
-import { ID } from "appwrite";
+import { Query } from "appwrite";
 import { Snackbar, useNotification } from "../Alerts";
 import ConfirmModal from "../ConfirmModal";
 import UpdateAssetModal from "./UpdateModal";
+import DynamicTable from "../DyanamicTable";
 
 export default function AssetDetails() {
   const location = useLocation();
@@ -40,9 +41,8 @@ export default function AssetDetails() {
   const { snackbar, showSnackbar, closeSnackbar } = useNotification();
   const [uAsset, setUAsset] = useState<any>(null)
   const [parsedHistory, setParsedHistory] = useState<Array<{
-    historyId: string;
-    employeeId: string;
-    assignDate: string;
+    updation: string;
+    date: string;
   }>>([]);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [showUnassignConfirm, setShowUnassignConfirm] = useState(false);
@@ -66,8 +66,8 @@ export default function AssetDetails() {
 
         setEmployees(availEmployees);
 
-        if (asset?.history && Array.isArray(asset.history)) {
-          const parsed = asset.history
+        if (asset.historyQueue && Array.isArray(asset.historyQueue)) {
+          const parsed = asset.historyQueue
             .map((entry: any) => {
               try {
                 let parsedEntry;
@@ -78,9 +78,8 @@ export default function AssetDetails() {
                 }
 
                 return {
-                  historyId: parsedEntry.historyId || ID.unique(),
-                  employeeId: parsedEntry.employeeId,
-                  assignDate: parsedEntry.assignDate || parsedEntry.assignedDate || new Date().toISOString()
+                  updation: parsedEntry.updation || "N/A",
+                  date: parsedEntry.date || new Date().toISOString()
                 };
               } catch (e) {
                 console.error("Error parsing history entry:", e);
@@ -88,7 +87,7 @@ export default function AssetDetails() {
               }
             })
             .filter((entry: any) => entry !== null)
-            .sort((a: any, b: any) => new Date(b.assignDate).getTime() - new Date(a.assignDate).getTime());
+            .sort((a: any, b: any) => new Date(b.date).getTime() - new Date(a.date).getTime());
 
           setParsedHistory(parsed);
         }
@@ -128,16 +127,15 @@ export default function AssetDetails() {
     setAssigning(true);
 
     try {
-      const currentHistory = asset?.history || [];
+      const currentHistory = asset?.historyQueue || [];
 
       const newHistoryEntry = JSON.stringify({
-        historyId: ID.unique(),
-        employeeId: selectedEmployee,
-        assignDate: new Date().toISOString(),
+        updation: `Assigned to Employee (${selectedEmployee})`,
+        date: new Date().toISOString(),
       });
 
       const updatedHistory = [newHistoryEntry, ...currentHistory];
-      if (updatedHistory.length > 5) updatedHistory.pop();
+      if (updatedHistory.length > 15) updatedHistory.pop();
 
       await databases.updateDocument('assetManagement', 'assets', asset.docId, {
         assignedTo: selectedEmployee,
@@ -149,17 +147,9 @@ export default function AssetDetails() {
         ...asset,
         assignedTo: selectedEmployee,
         status: 'Assigned',
-        history: updatedHistory
+        historyQueue: updatedHistory
       };
       setAsset(updatedAsset);
-
-      const newParsedEntry = {
-        historyId: ID.unique(),
-        employeeId: selectedEmployee,
-        assignDate: new Date().toISOString()
-      };
-      setParsedHistory([newParsedEntry, ...parsedHistory]);
-
       setSelectedEmployee("");
 
       showSnackbar(`Asset assigned successfully to ${selectedEmployee}!`, "success");
@@ -173,47 +163,61 @@ export default function AssetDetails() {
 
   const handleMarkDamaged = async () => {
     try {
+      const currentHistory = asset?.historyQueue || [];
+      let newStatus = '';
+      let updationText = '';
+
       if (asset.status === 'Damaged') {
-        await databases.updateDocument('assetManagement', 'assets', asset.docId, {
-          status: 'Available'
-        });
-
-        setAsset({ ...asset, status: 'Available' });
-
-        showSnackbar("Asset sent to available!", "success");
-        return;
+        newStatus = 'Available';
+        updationText = "Currently available to assign";
+      } else {
+        if (asset.status !== 'Available' && asset.status !== 'Available-O') {
+          showSnackbar('Cannot mark asset as damaged. Please make it available first.', 'error');
+          return;
+        }
+        newStatus = 'Damaged';
+        updationText = "Currently under damage";
       }
 
-      if (asset.status !== 'Available' && asset.status !== 'Available-O') {
-        showSnackbar('Cannot mark asset as damaged. Please make it available first.', 'error');
-        return;
-      }
-
-      await databases.updateDocument('assetManagement', 'assets', asset.docId, {
-        status: 'Damaged'
+      const newHistoryEntry = JSON.stringify({
+        updation: updationText,
+        date: new Date().toISOString(),
       });
 
-      setAsset({ ...asset, status: 'Damaged' });
+      const updatedHistory = [newHistoryEntry, ...currentHistory];
+      if (updatedHistory.length > 15) updatedHistory.pop();
 
-      showSnackbar("Asset sent to Damaged!", "success");
+      await databases.updateDocument('assetManagement', 'assets', asset.docId, {
+        status: newStatus,
+        historyQueue: updatedHistory
+      });
+
+      setAsset({ ...asset, status: newStatus, historyQueue: updatedHistory });
+
+      showSnackbar(`Asset status updated to ${newStatus}!`, "success");
     } catch (error) {
       console.error("Error:", error);
-      showSnackbar("Failed to send to Damaged", "error");
+      showSnackbar("Failed to update status", "error");
     }
   };
 
   const handleToggleStatusOSuffix = async () => {
     try {
       let newStatus = asset.status;
-      if (asset.status === 'Available') newStatus = 'Available-O';
-      else if (asset.status === 'Available-O') newStatus = 'Available';
-      else if (asset.status === 'Assigned') newStatus = 'Assigned-O';
-      else if (asset.status === 'Assigned-O') newStatus = 'Assigned';
-      else return;
+      if (asset.status === 'Available') {
+        newStatus = 'Available-O';
+      } else if (asset.status === 'Available-O') {
+        newStatus = 'Available';
+      } else if (asset.status === 'Assigned') {
+        newStatus = 'Assigned-O';
+      } else if (asset.status === 'Assigned-O') {
+        newStatus = 'Assigned';
+      } else return;
 
       await databases.updateDocument('assetManagement', 'assets', asset.docId, {
-        status: newStatus
+        status: newStatus,
       });
+
       setAsset({ ...asset, status: newStatus });
       showSnackbar(`Asset status updated to ${newStatus}!`, "success");
     } catch (error) {
@@ -224,32 +228,41 @@ export default function AssetDetails() {
 
   const handleSendToMaintenance = async () => {
     try {
+      const currentHistory = asset?.historyQueue || [];
+      let newStatus = '';
+      let updationText = '';
+
       if (asset.status === 'Maintainance') {
-        await databases.updateDocument('assetManagement', 'assets', asset.docId, {
-          status: 'Available'
-        });
-
-        setAsset({ ...asset, status: 'Available' });
-
-        showSnackbar("Asset sent to available!", "success");
-        return;
+        newStatus = 'Available';
+        updationText = "Currently available to assign";
+      } else {
+        if (asset.status !== 'Available' && asset.status !== 'Available-O') {
+          showSnackbar('Cannot send asset to maintenance. Please make it available first.', 'error');
+          return;
+        }
+        newStatus = 'Maintainance';
+        updationText = "Currently under maintenance";
       }
 
-      if (asset.status !== 'Available' && asset.status !== 'Available-O') {
-        showSnackbar('Cannot send asset to maintenance. Please make it available first.', 'error');
-        return;
-      }
-
-      await databases.updateDocument('assetManagement', 'assets', asset.docId, {
-        status: 'Maintainance'
+      const newHistoryEntry = JSON.stringify({
+        updation: updationText,
+        date: new Date().toISOString(),
       });
 
-      setAsset({ ...asset, status: 'Maintainance' });
+      const updatedHistory = [newHistoryEntry, ...currentHistory];
+      if (updatedHistory.length > 15) updatedHistory.pop();
 
-      showSnackbar("Asset sent to maintenance!", "success");
+      await databases.updateDocument('assetManagement', 'assets', asset.docId, {
+        status: newStatus,
+        historyQueue: updatedHistory
+      });
+
+      setAsset({ ...asset, status: newStatus, historyQueue: updatedHistory });
+
+      showSnackbar(`Asset status updated to ${newStatus}!`, "success");
     } catch (error) {
       console.error("Error:", error);
-      showSnackbar("Failed to send to maintenance", "error");
+      showSnackbar("Failed to update status", "error");
     }
   };
 
@@ -271,12 +284,22 @@ export default function AssetDetails() {
 
   const handleUnassignAsset = async () => {
     try {
-      await databases.updateDocument('assetManagement', 'assets', asset.docId, {
-        assignedTo: null,
-        status: 'Available'
+      const currentHistory = asset?.historyQueue || [];
+      const newHistoryEntry = JSON.stringify({
+        updation: "Available to assign (Unassigned)",
+        date: new Date().toISOString(),
       });
 
-      setAsset({ ...asset, assignedTo: null, status: 'Available' });
+      const updatedHistory = [newHistoryEntry, ...currentHistory];
+      if (updatedHistory.length > 15) updatedHistory.pop();
+
+      await databases.updateDocument('assetManagement', 'assets', asset.docId, {
+        assignedTo: null,
+        status: 'Available',
+        historyQueue: updatedHistory
+      });
+
+      setAsset({ ...asset, assignedTo: null, status: 'Available', historyQueue: updatedHistory });
 
       showSnackbar("Asset unassigned successfully!", "success");
       setShowUnassignConfirm(false);
@@ -296,9 +319,15 @@ export default function AssetDetails() {
 
       setAsset({
         ...asset,
-        id: updatedDoc.id || updatedDoc.assetId,
-        asset: updatedDoc.asset || updatedDoc.assetName,
-        desc: updatedDoc.desc || updatedDoc.description,
+        id: updatedDoc.assetId || updatedDoc.id,
+        asset: updatedDoc.assetName || updatedDoc.asset,
+        desc: updatedDoc.description || updatedDoc.desc,
+        status: updatedDoc.status,
+        assetType: updatedDoc.assetType,
+        osType: updatedDoc.osType,
+        assignedTo: updatedDoc.assignedTo,
+        purchaseDate: updatedDoc.purchaseDate,
+        historyQueue: updatedDoc.historyQueue
       });
 
       // showSnackbar("Asset updated successfully!", "success");
@@ -543,56 +572,46 @@ export default function AssetDetails() {
               </CardContent>
             </Card>
 
-            <Card className="border-blue-200 shadow-sm">
+            <Card className="border-blue-200 shadow-sm overflow-hidden">
               <CardContent className="p-4 md:p-6">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
                   <div className="flex items-center gap-2">
                     <History className="h-5 w-5 text-gray-500" />
-                    <h2 className="text-lg font-semibold text-gray-900">Assignment History</h2>
+                    <h2 className="text-lg font-semibold text-gray-900">Asset History</h2>
                   </div>
-                  <Badge variant="secondary" className="w-fit">
-                    {parsedHistory.length} records
-                  </Badge>
                 </div>
 
-                {parsedHistory.length > 0 ? (
-                  <div className="space-y-3">
-                    {parsedHistory.map((entry, index) => (
-                      <div
-                        key={entry.historyId || index}
-                        className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
-                      >
-                        <div className="flex items-center gap-3 flex-1 min-w-0">
-                          <div className="h-10 w-10 rounded-full bg-gray-50 border border-gray-200 flex items-center justify-center flex-shrink-0">
-                            <User className="h-4 w-4 text-gray-600" />
+                <div className="max-h-[400px] overflow-auto">
+                  <DynamicTable
+                    columns={[
+                      {
+                        key: 'updation',
+                        title: 'Updation status',
+                        width: 400,
+                        render: (item: any) => (
+                          <div className="flex items-center gap-2">
+                            <div className="h-2 w-2 rounded-full bg-blue-500" />
+                            <span className="text-gray-700 whitespace-normal break-words">{item.updation}</span>
                           </div>
-                          <div className="min-w-0 flex-1">
-                            <p className="font-medium text-gray-900 truncate">
-                              {entry.employeeId.split('(')[0]?.trim() || entry.employeeId}
-                            </p>
-                            <p className="text-sm text-gray-500 truncate">
-                              {entry.employeeId.includes('(')
-                                ? entry.employeeId.match(/\(([^)]+)\)/)?.[1] || entry.employeeId
-                                : "No ID"}
-                            </p>
+                        )
+                      },
+                      {
+                        key: 'date',
+                        title: 'Date',
+                        render: (item: any) => (
+                          <div className="text-gray-500 text-xs sm:text-sm">
+                            {new Date(item.date).toLocaleDateString()} {new Date(item.date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                           </div>
-                        </div>
-                        <div className="flex items-center gap-2 text-sm text-gray-600 sm:ml-3 sm:flex-shrink-0">
-                          <Clock className="h-4 w-4" />
-                          <span className="whitespace-nowrap">{formatDate(entry.assignDate)}</span>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  <div className="text-center py-8 border border-dashed border-gray-300 rounded-lg">
-                    <History className="h-12 w-12 text-gray-300 mx-auto mb-3" />
-                    <p className="text-gray-600 font-medium">No assignment history found</p>
-                    <p className="text-sm text-gray-500 mt-1">
-                      This asset has never been assigned to anyone
-                    </p>
-                  </div>
-                )}
+                        )
+                      }
+                    ]}
+                    data={parsedHistory}
+                    compact={true}
+                    bordered={true}
+                    striped={true}
+                    emptyMessage="No history available for this asset"
+                  />
+                </div>
               </CardContent>
             </Card>
           </div>

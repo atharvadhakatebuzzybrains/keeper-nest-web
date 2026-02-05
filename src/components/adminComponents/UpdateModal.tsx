@@ -86,6 +86,17 @@ export default function UpdateAssetModal({ asset, visible, onClose }: UpdateAsse
         setLoading(true);
 
         try {
+            const doc = await databases.getDocument('assetManagement', 'assets', asset?.$id as string);
+            const currentHistory = doc.historyQueue || [];
+
+            const newHistoryEntry = JSON.stringify({
+                updation: "Asset details updated",
+                date: new Date().toISOString(),
+            });
+
+            const updatedHistory = [newHistoryEntry, ...currentHistory];
+            if (updatedHistory.length > 15) updatedHistory.pop();
+
             await databases.updateDocument(
                 'assetManagement',
                 'assets',
@@ -95,6 +106,7 @@ export default function UpdateAssetModal({ asset, visible, onClose }: UpdateAsse
                     assetId: assetId.trim(),
                     description: description.trim(),
                     osType: osType || null,
+                    historyQueue: updatedHistory,
                 }
             );
 
