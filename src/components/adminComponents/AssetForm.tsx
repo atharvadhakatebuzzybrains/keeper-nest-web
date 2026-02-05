@@ -13,6 +13,7 @@ import {
   PlusCircle,
   Loader2,
   RefreshCcw,
+  Monitor,
 } from "lucide-react"
 
 import { Button } from "../ui/button"
@@ -55,6 +56,15 @@ const assetSchema = z.object({
     message: "Purchase date is required",
   }),
   description: z.string().optional(),
+  osType: z.enum(["Windows", "Ubuntu", "macOS"]).optional(),
+}).superRefine((data, ctx) => {
+  if (data.assetType === "Laptop" && !data.osType) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: "OS Type is required for Laptops",
+      path: ["osType"],
+    });
+  }
 });
 
 type AssetFormValues = z.infer<typeof assetSchema>
@@ -75,43 +85,46 @@ export default function CreateAsset() {
     },
   })
 
+  const assetType = form.watch("assetType");
+
   async function onSubmit(values: AssetFormValues) {
     console.log("Asset Data:", values);
-    setLoading(true); // ✅ Start loading
-    
+    setLoading(true);
+
     try {
-        const res = await databases.listDocuments('assetManagement', 'assets', [
-            Query.equal('assetId', values.assetId),
-        ]);
+      const res = await databases.listDocuments('assetManagement', 'assets', [
+        Query.equal('assetId', values.assetId),
+      ]);
 
-        if (res.total > 0) {
-            showSnackbar('Asset ID already exists. Please use a unique Asset ID.', 'error');
-            setLoading(false); // ✅ Stop loading on error
-            return;
-        }
+      if (res.total > 0) {
+        showSnackbar('Asset ID already exists. Please use a unique Asset ID.', 'error');
+        setLoading(false);
+        return;
+      }
 
-        const currentYear = new Date().getFullYear();
-        const expiredAt = new Date(currentYear, 11, 31);
+      const currentYear = new Date().getFullYear();
+      const expiredAt = new Date(currentYear, 11, 31);
 
-        await databases.createDocument('assetManagement', 'assets', 'unique()', {
-            assetName: values.assetName,
-            assetType: values.assetType,
-            assetId: values.assetId,
-            purchaseDate: values.purchaseDate.toISOString(),
-            description: values.description || '',
-            status: 'Available',
-            expiredAt: expiredAt.toISOString(),
-        });
+      await databases.createDocument('assetManagement', 'assets', 'unique()', {
+        assetName: values.assetName,
+        assetType: values.assetType,
+        assetId: values.assetId,
+        purchaseDate: values.purchaseDate.toISOString(),
+        description: values.description || '',
+        osType: values.osType || null,
+        status: 'Available',
+        expiredAt: expiredAt.toISOString(),
+      });
 
-        showSnackbar('Asset created successfully!', 'success');
-        form.reset();
-        navigate('/dashboard/viewAssets');
-        
+      showSnackbar('Asset created successfully!', 'success');
+      form.reset();
+      navigate('/dashboard/viewAssets');
+
     } catch (err) {
-        console.error("Error creating asset:", err);
-        showSnackbar('Failed to create asset. Please try again.', 'error');
+      console.error("Error creating asset:", err);
+      showSnackbar('Failed to create asset. Please try again.', 'error');
     } finally {
-        setLoading(false); 
+      setLoading(false);
     }
   }
 
@@ -192,33 +205,64 @@ export default function CreateAsset() {
                   />
                 </div>
 
-                {/* Asset Type */}
-                <FormField
-                  control={form.control}
-                  name="assetType"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-gray-700">Asset Type <span className="text-red-500">*</span></FormLabel>
-                      <div className="relative flex items-center">
-                        <LuShapes className="absolute left-3.5 h-5 w-5 text-blue-500 z-10 pointer-events-none" />
-                        <Select onValueChange={field.onChange} value={field.value}>
-                          <FormControl>
-                            <SelectTrigger className="h-11 pl-12 border-gray-200 focus:ring-blue-100">
-                              <SelectValue placeholder="Select asset type" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            <SelectItem value="Laptop">Laptop</SelectItem>
-                            <SelectItem value="Mouse">Mouse</SelectItem>
-                            <SelectItem value="Keyboard">Keyboard</SelectItem>
-                            <SelectItem value="Other">Other</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
-                      <FormMessage />
-                    </FormItem>
+                {/* Asset Type and OS Type Grid */}
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                  <FormField
+                    control={form.control}
+                    name="assetType"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-gray-700">Asset Type <span className="text-red-500">*</span></FormLabel>
+                        <div className="relative flex items-center">
+                          <LuShapes className="absolute left-3.5 h-5 w-5 text-blue-500 z-10 pointer-events-none" />
+                          <Select onValueChange={field.onChange} value={field.value}>
+                            <FormControl>
+                              <SelectTrigger className="h-11 pl-12 border-gray-200 focus:ring-blue-100">
+                                <SelectValue placeholder="Select asset type" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              <SelectItem value="Laptop">Laptop</SelectItem>
+                              <SelectItem value="Mouse">Mouse</SelectItem>
+                              <SelectItem value="Keyboard">Keyboard</SelectItem>
+                              <SelectItem value="Other">Other</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  {/* Conditional OS Type Selector */}
+                  {assetType === "Laptop" && (
+                    <FormField
+                      control={form.control}
+                      name="osType"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-gray-700">OS Type <span className="text-red-500">*</span></FormLabel>
+                          <div className="relative flex items-center">
+                            <Monitor className="absolute left-3.5 h-5 w-5 text-blue-500 z-10 pointer-events-none" />
+                            <Select onValueChange={field.onChange} value={field.value}>
+                              <FormControl>
+                                <SelectTrigger className="h-11 pl-12 border-gray-200 focus:ring-blue-100">
+                                  <SelectValue placeholder="Select OS" />
+                                </SelectTrigger>
+                              </FormControl>
+                              <SelectContent>
+                                <SelectItem value="Windows">Windows</SelectItem>
+                                <SelectItem value="Ubuntu">Ubuntu</SelectItem>
+                                <SelectItem value="macOS">macOS</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </div>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
                   )}
-                />
+                </div>
               </div>
 
               <div className="space-y-6 pt-4 border-t border-gray-100">

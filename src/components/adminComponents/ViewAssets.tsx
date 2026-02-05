@@ -20,6 +20,7 @@ interface Asset {
   asset: any;
   desc: any;
   type: any;
+  osType?: string;
   status: any;
   assignedTo: any;
   date: string;
@@ -55,6 +56,7 @@ export default function ViewAssets() {
       asset: doc.name || doc.assetName || 'N/A',
       desc: doc.description || '-',
       type: doc.assetType,
+      osType: doc.osType,
       status: doc.status,
       assignedTo: doc.assignedTo || 'Not Assigned',
       date: new Date(doc.purchaseDate).toLocaleDateString(),
@@ -95,7 +97,8 @@ export default function ViewAssets() {
       filtered = filtered.filter(asset =>
         String(asset.asset).toLowerCase().includes(searchTerm.toLowerCase()) ||
         String(asset.id).toLowerCase().includes(searchTerm.toLowerCase()) ||
-        String(asset.desc).toLowerCase().includes(searchTerm.toLowerCase())
+        String(asset.desc).toLowerCase().includes(searchTerm.toLowerCase()) ||
+        String(asset.osType).toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
 
@@ -130,11 +133,16 @@ export default function ViewAssets() {
       key: 'type',
       title: 'Asset Type',
       width: 250,
-      render: (item: Asset) => (
-        <span title={String(item.type)}>
-          {truncateText(item.type, 25)}
-        </span>
-      )
+      render: (item: Asset) => {
+        const displayType = item.type === 'Laptop' && item.osType
+          ? `Laptop (${item.osType})`
+          : item.type;
+        return (
+          <span title={String(displayType)}>
+            {truncateText(displayType, 25)}
+          </span>
+        );
+      }
     },
     {
       key: 'status',
@@ -180,6 +188,7 @@ export default function ViewAssets() {
                 description: item.desc,
                 status: item.status,
                 assetType: item.type,
+                osType: item.osType,
                 assignedTo: item.assignedTo,
                 purchaseDate: item.date
               });
@@ -306,7 +315,7 @@ export default function ViewAssets() {
         </div>
         <DynamicTable
           columns={columns}
-          columnWidths={[60, 100, 140, 80, 100, 140, 120, 180] as any}
+          columnWidths={[60, 100, 140, 100, 100, 140, 120, 180] as any}
           data={filteredAssets as any}
           title=""
           bordered={true}

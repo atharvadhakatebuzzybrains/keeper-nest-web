@@ -521,7 +521,6 @@ export default function Signup() {
                             {...field}
                             onChange={(e) => {
                               field.onChange(e);
-                              // Reset verification status when email changes
                               if (emailVerificationStatus !== 'idle') {
                                 setEmailVerificationStatus('idle');
                                 setOtp('');
