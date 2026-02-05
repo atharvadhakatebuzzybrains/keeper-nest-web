@@ -60,7 +60,7 @@ export default function ViewAssets() {
       status: doc.status,
       assignedTo: doc.assignedTo || 'Not Assigned',
       date: new Date(doc.purchaseDate).toLocaleDateString(),
-      history: doc.historyQueue
+      historyQueue: doc.historyQueue
     }));
     setAssets(formattedAssets);
     setFilteredAssets(formattedAssets);
@@ -190,7 +190,8 @@ export default function ViewAssets() {
                 assetType: item.type,
                 osType: item.osType,
                 assignedTo: item.assignedTo,
-                purchaseDate: item.date
+                purchaseDate: item.date,
+                historyQueue: item.historyQueue
               });
               setShowUpdateModal(true);
             }}

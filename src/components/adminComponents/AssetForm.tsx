@@ -114,6 +114,7 @@ export default function CreateAsset() {
         osType: values.osType || null,
         status: 'Available',
         expiredAt: expiredAt.toISOString(),
+        historyQueue: [JSON.stringify({ updation: "Asset Created", date: new Date().toISOString() })]
       });
 
       showSnackbar('Asset created successfully!', 'success');
