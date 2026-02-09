@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import { Button } from "../components/ui/button"
 import { Bell, CheckCircle2, X, Info, AlertTriangle, AlertCircle } from "lucide-react"
 
@@ -166,30 +166,30 @@ export const useNotification = () => {
     type: 'info' as AlertType
   });
 
-  const showSnackbar = (message: string, type: AlertType = 'info') => {
+  const showSnackbar = useCallback((message: string, type: AlertType = 'info') => {
     setSnackbar({
       isOpen: true,
       message,
       type
     });
-  };
+  }, []);
 
-  const showNotification = (title: string, description: string, type: AlertType = 'info') => {
+  const showNotification = useCallback((title: string, description: string, type: AlertType = 'info') => {
     setNotification({
       isOpen: true,
       title,
       description,
       type
     });
-  };
+  }, []);
 
-  const closeSnackbar = () => {
+  const closeSnackbar = useCallback(() => {
     setSnackbar(prev => ({ ...prev, isOpen: false }));
-  };
+  }, []);
 
-  const closeNotification = () => {
+  const closeNotification = useCallback(() => {
     setNotification(prev => ({ ...prev, isOpen: false }));
-  };
+  }, []);
 
   return {
     snackbar,
@@ -230,64 +230,64 @@ const Alerts = () => {
         <div className="space-y-3 sm:space-y-4 md:space-y-6">
           <h2 className="text-lg sm:text-xl font-semibold text-gray-900 border-b pb-1.5 sm:pb-2">Modal Alerts</h2>
           <div className="grid grid-cols-2 gap-2 sm:gap-3 md:gap-4">
-            <Button 
-              onClick={() => triggerAlert('success')} 
-              variant="outline" 
+            <Button
+              onClick={() => triggerAlert('success')}
+              variant="outline"
               className="border-green-200 hover:bg-green-50 text-green-700 text-xs sm:text-sm h-8 sm:h-10"
             >
               Success Modal
             </Button>
-            <Button 
-              onClick={() => triggerAlert('error')} 
-              variant="outline" 
+            <Button
+              onClick={() => triggerAlert('error')}
+              variant="outline"
               className="border-red-200 hover:bg-red-50 text-red-700 text-xs sm:text-sm h-8 sm:h-10"
             >
               Error Modal
             </Button>
-            <Button 
-              onClick={() => triggerAlert('warning')} 
-              variant="outline" 
+            <Button
+              onClick={() => triggerAlert('warning')}
+              variant="outline"
               className="border-amber-200 hover:bg-amber-50 text-amber-700 text-xs sm:text-sm h-8 sm:h-10"
             >
               Warning Modal
             </Button>
-            <Button 
-              onClick={() => triggerAlert('info')} 
-              variant="outline" 
+            <Button
+              onClick={() => triggerAlert('info')}
+              variant="outline"
               className="border-blue-200 hover:bg-blue-50 text-blue-700 text-xs sm:text-sm h-8 sm:h-10"
             >
               Info Modal
             </Button>
           </div>
         </div>
-        
+
         <div className="space-y-3 sm:space-y-4 md:space-y-6">
           <h2 className="text-lg sm:text-xl font-semibold text-gray-900 border-b pb-1.5 sm:pb-2">Toast Snackbars</h2>
           <div className="grid grid-cols-2 gap-2 sm:gap-3 md:gap-4">
-            <Button 
-              onClick={() => triggerSnackbar('success')} 
-              variant="outline" 
+            <Button
+              onClick={() => triggerSnackbar('success')}
+              variant="outline"
               className="border-green-200 hover:bg-green-50 text-green-700 text-xs sm:text-sm h-8 sm:h-10"
             >
               Success Toast
             </Button>
-            <Button 
-              onClick={() => triggerSnackbar('error')} 
-              variant="outline" 
+            <Button
+              onClick={() => triggerSnackbar('error')}
+              variant="outline"
               className="border-red-200 hover:bg-red-50 text-red-700 text-xs sm:text-sm h-8 sm:h-10"
             >
               Error Toast
             </Button>
-            <Button 
-              onClick={() => triggerSnackbar('warning')} 
-              variant="outline" 
+            <Button
+              onClick={() => triggerSnackbar('warning')}
+              variant="outline"
               className="border-amber-200 hover:bg-amber-50 text-amber-700 text-xs sm:text-sm h-8 sm:h-10"
             >
               Warning Toast
             </Button>
-            <Button 
-              onClick={() => triggerSnackbar('info')} 
-              variant="outline" 
+            <Button
+              onClick={() => triggerSnackbar('info')}
+              variant="outline"
               className="border-blue-200 hover:bg-blue-50 text-blue-700 text-xs sm:text-sm h-8 sm:h-10"
             >
               Info Toast

@@ -16,21 +16,21 @@ const DynamicTable = ({
   striped = true,
   hoverable = true,
 }) => {
-  
+
   const renderCell = (item, column) => {
     const { key, render, align = 'left' } = column;
-    
+
     if (render) {
       return render(item);
     }
-    
+
     const value = key.split('.').reduce((obj, k) => obj?.[k], item);
     return value ?? '-';
   };
 
   const getColumnStyle = (index) => {
     const width = columnWidths[index] || columns[index]?.width;
-    return width ? { 
+    return width ? {
       width: typeof width === 'number' ? `${width}px` : width,
       minWidth: typeof width === 'number' ? `${width}px` : width,
     } : {};
@@ -69,14 +69,14 @@ const DynamicTable = ({
           <h3 className="text-base sm:text-lg font-semibold text-gray-800 truncate">{title}</h3>
         </div>
       )}
-      
+
       <div className="overflow-x-auto">
         <div className="min-w-max inline-block align-middle w-full">
           <table className="w-full border-collapse">
             <thead>
               <tr>
                 {showIndex && (
-                  <th 
+                  <th
                     style={{ width: '60px', minWidth: '60px' }}
                     className={`
                       ${cellPadding}
@@ -88,7 +88,7 @@ const DynamicTable = ({
                     <div className="text-center">#</div>
                   </th>
                 )}
-                
+
                 {columns.map((column, index) => (
                   <th
                     key={column.key || index}
@@ -107,7 +107,7 @@ const DynamicTable = ({
                 ))}
               </tr>
             </thead>
-            
+
             <tbody>
               {data.map((item, rowIndex) => (
                 <tr
@@ -121,7 +121,7 @@ const DynamicTable = ({
                   `}
                 >
                   {showIndex && (
-                    <td 
+                    <td
                       style={{ width: '60px', minWidth: '60px' }}
                       className={`
                         ${cellPadding}
@@ -134,7 +134,7 @@ const DynamicTable = ({
                       <div className="text-center font-medium">{rowIndex + 1}</div>
                     </td>
                   )}
-                  
+
                   {columns.map((column, colIndex) => (
                     <td
                       key={colIndex}
@@ -158,7 +158,7 @@ const DynamicTable = ({
           </table>
         </div>
       </div>
-      
+
       {/* Mobile Scroll Indicator */}
       {/* <div className="px-4 py-3 border-t border-gray-200 bg-gray-50/50">
         <div className="flex items-center justify-between text-xs text-gray-500">

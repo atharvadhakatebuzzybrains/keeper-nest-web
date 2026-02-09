@@ -12,10 +12,9 @@ import {
     DialogFooter,
 } from "../ui/dialog";
 import { Card, CardContent } from "../ui/card";
-import { Loader2, Pencil, Laptop, Tag, FileText, X, Check, Monitor } from 'lucide-react';
+import { Loader2, Pencil, Laptop, Tag, FileText, X, Check } from 'lucide-react';
 import { databases } from '../../appwrite/config';
 import { Snackbar, useNotification } from '../Alerts';
-import CustomDropdown from '../CustomDropdown';
 
 interface Asset {
     $id: string;
@@ -35,19 +34,13 @@ interface UpdateAssetModalProps {
     onClose: () => void;
 }
 
-const osOptions = [
-    { label: 'Windows', value: 'Windows' },
-    { label: 'Ubuntu', value: 'Ubuntu' },
-    { label: 'macOS', value: 'macOS' },
-];
-
 export default function UpdateAssetModal({ asset, visible, onClose }: UpdateAssetModalProps) {
     const [loading, setLoading] = useState(false);
     const [assetName, setAssetName] = useState(asset?.assetName || '');
     const [assetId, setAssetId] = useState(asset?.assetId || '');
     const [description, setDescription] = useState(asset?.description || '');
-    const [osType, setOsType] = useState(asset?.osType || '');
-    const [errors, setErrors] = useState<{ assetName?: string; assetId?: string; osType?: string }>({});
+    const [osType, setOsType] = useState(asset?.osType);
+    const [errors, setErrors] = useState<{ assetName?: string; assetId?: string }>({});
     const { snackbar, showSnackbar, closeSnackbar } = useNotification();
 
     useEffect(() => {
@@ -55,13 +48,12 @@ export default function UpdateAssetModal({ asset, visible, onClose }: UpdateAsse
             setAssetName(asset.assetName || '');
             setAssetId(asset.assetId || '');
             setDescription(asset.description || '');
-            setOsType(asset.osType || '');
             setErrors({});
         }
     }, [asset, visible]);
 
     const validateForm = () => {
-        const newErrors: { assetName?: string; assetId?: string; osType?: string } = {};
+        const newErrors: { assetName?: string; assetId?: string } = {};
 
         if (!assetName.trim()) {
             newErrors.assetName = 'Asset name is required';
@@ -71,10 +63,6 @@ export default function UpdateAssetModal({ asset, visible, onClose }: UpdateAsse
             newErrors.assetId = 'Asset ID is required';
         }
 
-        if (asset?.assetType === 'Laptop' && !osType) {
-            newErrors.osType = 'OS Type is required for Laptops';
-        }
-
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
     };
@@ -82,31 +70,18 @@ export default function UpdateAssetModal({ asset, visible, onClose }: UpdateAsse
     const handleSubmit = async () => {
         if (!validateForm()) return;
 
-        console.log('Submitting update:', { assetName, assetId, description, osType });
+        console.log('Submitting update:', { assetName, assetId, description });
         setLoading(true);
 
         try {
-            const doc = await databases.getDocument('assetManagement', 'assets', asset?.$id as string);
-            const currentHistory = doc.historyQueue || [];
-
-            const newHistoryEntry = JSON.stringify({
-                updation: "Asset details updated",
-                date: new Date().toISOString(),
-            });
-
-            const updatedHistory = [newHistoryEntry, ...currentHistory];
-            if (updatedHistory.length > 15) updatedHistory.pop();
-
             await databases.updateDocument(
                 'assetManagement',
                 'assets',
-                asset?.$id as string,
+                asset?.$id,
                 {
                     assetName: assetName.trim(),
                     assetId: assetId.trim(),
                     description: description.trim(),
-                    osType: osType || null,
-                    historyQueue: updatedHistory,
                 }
             );
 
@@ -139,6 +114,15 @@ export default function UpdateAssetModal({ asset, visible, onClose }: UpdateAsse
                                 </DialogDescription>
                             </div>
                         </div>
+                        {/* <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={onClose}
+                            className="h-8 w-8 p-0 rounded-full hover:bg-gray-100"
+                            aria-label="Close"
+                        >
+                            <X className="h-4 w-4" />
+                        </Button> */}
                     </div>
                 </DialogHeader>
 
@@ -196,35 +180,6 @@ export default function UpdateAssetModal({ asset, visible, onClose }: UpdateAsse
                                 disabled={loading}
                             />
                         </div>
-
-                        {/* OS Type Field (Conditional) */}
-                        {asset.assetType === 'Laptop' && (
-                            <div className="space-y-2">
-                                <div className="flex items-center justify-between">
-                                    <Label className="flex items-center gap-1.5 text-sm font-medium text-gray-900">
-                                        <Monitor className="h-3.5 w-3.5 text-blue-500" />
-                                        OS Type
-                                        <span className="text-red-500">*</span>
-                                    </Label>
-                                    {errors.osType && (
-                                        <span className="text-xs text-red-500 font-medium">{errors.osType}</span>
-                                    )}
-                                </div>
-                                <CustomDropdown
-                                    options={osOptions}
-                                    value={osType}
-                                    onChange={(value) => {
-                                        setOsType(value);
-                                        if (errors.osType) {
-                                            setErrors(prev => ({ ...prev, osType: undefined }));
-                                        }
-                                    }}
-                                    placeholder="Select OS Type"
-                                    className={errors.osType ? 'border-red-300' : ''}
-                                    disabled={loading}
-                                />
-                            </div>
-                        )}
 
                         <div className="space-y-2">
                             <Label htmlFor="description" className="flex items-center gap-1.5 text-sm font-medium text-gray-900">
