@@ -2,7 +2,7 @@ import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import * as z from "zod"
 import { format } from "date-fns"
-import { LuShapes } from "react-icons/lu";
+import { LuPlus, LuShapes } from "react-icons/lu";
 import { MdLaptop } from "react-icons/md";
 import { FaCalendarDay } from "react-icons/fa6";
 import {
@@ -11,9 +11,9 @@ import {
   FileText,
   Package,
   PlusCircle,
-  Loader2,
-  RefreshCcw,
   Monitor,
+  Loader2,
+  RefreshCcw
 } from "lucide-react"
 
 import { Button } from "../ui/button"
@@ -41,11 +41,10 @@ import {
   PopoverTrigger,
 } from "../ui/popover"
 import { cn } from "../../lib/utils"
-import { Badge } from "../ui/badge"
 import { databases } from "../../appwrite/config";
 import { Query } from "appwrite";
 import { Snackbar, useNotification } from "../Alerts";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
 const assetSchema = z.object({
@@ -70,9 +69,38 @@ const assetSchema = z.object({
 type AssetFormValues = z.infer<typeof assetSchema>
 
 export default function CreateAsset() {
-  const navigate = useNavigate(); // ✅ Move inside component
+  const navigate = useNavigate();
   const { snackbar, showSnackbar, closeSnackbar } = useNotification();
   const [loading, setLoading] = useState(false);
+  const [assetTypes, setAssetTypes] = useState<string[]>([]);
+  const [isAddingNewType, setIsAddingNewType] = useState<boolean>(false);
+  const [newTypeName, setNewTypeName] = useState('');
+  const [assetLoading, setAssetLoading] = useState(false);
+
+  // FIXED: Correct useEffect with async function inside
+  useEffect(() => {
+    const fetchAssetTypes = async () => {
+      try {
+        const res = await databases.listDocuments('assetManagement', 'asset-type');
+        let types = res.documents.map(doc => doc.assetType);
+
+        // Fallback if collection is empty
+        if (types.length === 0) {
+          types = ['Laptop', 'Mouse', 'Keyboard', 'Other'];
+        }
+
+        console.log(types);
+        setAssetTypes(types);
+      } catch (err) {
+        console.error("Error fetching asset types:", err);
+        // Fallback on error
+        setAssetTypes(['Laptop', 'Mouse', 'Keyboard', 'Other']);
+        showSnackbar('Loaded default asset types.', 'info');
+      }
+    };
+
+    fetchAssetTypes();
+  }, [showSnackbar]);
 
   const form = useForm<AssetFormValues>({
     resolver: zodResolver(assetSchema),
@@ -129,6 +157,27 @@ export default function CreateAsset() {
     }
   }
 
+  async function handleAddNewType() {
+    setAssetLoading(true);
+    try {
+      if (assetTypes.includes(newTypeName)) {
+        showSnackbar('Asset Type already exists!', 'error');
+        return;
+      }
+
+      await databases.createDocument('assetManagement', 'asset-type', 'unique()', { assetType: newTypeName });
+
+      setAssetTypes(prev => [...prev, newTypeName]);
+      showSnackbar('Asset Type added successfully', 'success');
+      setNewTypeName('');
+    } catch (err) {
+      console.log(`Asset Type addition error: ${err}`);
+      showSnackbar('Failed to add asset type', 'error');
+    } finally {
+      setAssetLoading(false);
+    }
+  }
+
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <div className="bg-white rounded-2xl overflow-hidden shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-200">
@@ -136,7 +185,7 @@ export default function CreateAsset() {
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <div className="flex items-center gap-4">
               <div className="relative border-2 border-white rounded-xl shadow-xl">
-                <div className="w-12 h-12   bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center shadow-md">
+                <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center shadow-md">
                   <Package className="h-6 w-6 text-white" />
                 </div>
                 <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-blue-100 rounded-full border-2 border-white flex items-center justify-center">
@@ -206,7 +255,6 @@ export default function CreateAsset() {
                   />
                 </div>
 
-                {/* Asset Type and OS Type Grid */}
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                   <FormField
                     control={form.control}
@@ -214,28 +262,56 @@ export default function CreateAsset() {
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel className="text-gray-700">Asset Type <span className="text-red-500">*</span></FormLabel>
-                        <div className="relative flex items-center">
-                          <LuShapes className="absolute left-3.5 h-5 w-5 text-blue-500 z-10 pointer-events-none" />
-                          <Select onValueChange={field.onChange} value={field.value}>
-                            <FormControl>
-                              <SelectTrigger className="h-11 pl-12 border-gray-200 focus:ring-blue-100">
-                                <SelectValue placeholder="Select asset type" />
-                              </SelectTrigger>
-                            </FormControl>
-                            <SelectContent>
-                              <SelectItem value="Laptop">Laptop</SelectItem>
-                              <SelectItem value="Mouse">Mouse</SelectItem>
-                              <SelectItem value="Keyboard">Keyboard</SelectItem>
-                              <SelectItem value="Other">Other</SelectItem>
-                            </SelectContent>
-                          </Select>
+                        <div className="flex gap-2">
+                          <div className="relative flex items-center flex-1">
+                            <LuShapes className="absolute left-3.5 h-5 w-5 text-blue-500 z-10 pointer-events-none" />
+                            <Select onValueChange={field.onChange} value={field.value}>
+                              <FormControl>
+                                <SelectTrigger className="h-11 pl-12 border-gray-200 focus:ring-blue-100 flex-1">
+                                  <SelectValue placeholder="Select asset type" />
+                                </SelectTrigger>
+                              </FormControl>
+                              <SelectContent>
+                                {assetTypes.map((type) => (
+                                  <SelectItem key={type} value={type}>
+                                    {type}
+                                  </SelectItem>
+                                ))}
+                                <div className="p-2 border-t">
+                                  <button
+                                    type="button"
+                                    className="flex items-center justify-center w-full px-2 py-1.5 text-sm text-blue-600 hover:bg-blue-50 rounded"
+                                    onClick={() => {
+                                      setIsAddingNewType(true);
+                                      form.setValue('assetType', '');
+                                    }}
+                                  >
+                                    <LuPlus className="h-4 w-4 mr-1.5" />
+                                    Add New Type
+                                  </button>
+                                </div>
+                              </SelectContent>
+                            </Select>
+                          </div>
+
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="icon"
+                            className="h-11 w-11"
+                            onClick={() => {
+                              setIsAddingNewType(true);
+                              form.setValue("assetType", "");
+                            }}
+                          >
+                            <LuPlus className="h-5 w-5" />
+                          </Button>
                         </div>
                         <FormMessage />
                       </FormItem>
                     )}
                   />
 
-                  {/* Conditional OS Type Selector */}
                   {assetType === "Laptop" && (
                     <FormField
                       control={form.control}
@@ -264,6 +340,59 @@ export default function CreateAsset() {
                     />
                   )}
                 </div>
+
+                {/* Add new type form */}
+                {isAddingNewType && (
+                  <div className="mt-4 p-4 border border-blue-100 bg-blue-50 rounded-lg">
+                    <div className="space-y-3">
+                      <div className="flex items-center gap-2">
+                        <div className="relative flex-1">
+                          <Input
+                            placeholder="Enter new asset type..."
+                            value={newTypeName}
+                            onChange={(e) => setNewTypeName(e.target.value)}
+                            className="h-10"
+                            autoFocus
+                            onKeyDown={(e) => {
+                              if (e.key === 'Enter') {
+                                e.preventDefault();
+                                handleAddNewType();
+                              }
+                            }}
+                          />
+                        </div>
+                      </div>
+                      <div className="flex justify-end gap-2">
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          className="h-9"
+                          onClick={() => {
+                            setIsAddingNewType(false);
+                            setNewTypeName('');
+                          }}
+                        >
+                          Cancel
+                        </Button>
+                        <Button
+                          type="button"
+                          size="sm"
+                          className="h-9"
+                          onClick={handleAddNewType}
+                          disabled={!newTypeName.trim() || assetLoading}
+                        >
+                          {assetLoading ? (
+                            <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                          ) : (
+                            <LuPlus className="h-4 w-4 mr-2" />
+                          )}
+                          Add Type
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
 
               <div className="space-y-6 pt-4 border-t border-gray-100">
@@ -348,7 +477,10 @@ export default function CreateAsset() {
                       Creating...
                     </>
                   ) : (
-                    <><RefreshCcw className="mr-2 h-5 w-5" /> Create Asset</>
+                    <>
+                      <RefreshCcw className="mr-2 h-5 w-5" />
+                      Create Asset
+                    </>
                   )}
                 </Button>
               </div>

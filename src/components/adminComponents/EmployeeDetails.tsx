@@ -10,12 +10,13 @@ import {
     Calendar, UserPlus, MapPin, User,
     Package, CheckCircle, XCircle, Clock,
     Trash2, AlertTriangle, ArrowLeft,
-    Laptop, Keyboard, Mouse,
+    Laptop, Keyboard, Mouse, History
 } from 'lucide-react';
 import { databases, functions } from '../../appwrite/config';
 import { ID } from 'appwrite';
 import { Snackbar, useNotification } from '../Alerts';
 import ConfirmModal from '../ConfirmModal';
+import DynamicTable from '../DyanamicTable';
 import man from '../../assets/images/man.png';
 import woman from '../../assets/images/woman.png';
 
@@ -30,6 +31,10 @@ export default function EmployeeDetails() {
     const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
     const [assetOptions, setAssetOptions] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
+    const [parsedHistory, setParsedHistory] = useState<Array<{
+        updation: string;
+        date: string;
+    }>>([]);
     const { snackbar, showSnackbar, closeSnackbar } = useNotification();
 
     const getAssetIcon = (assetType: string) => {
@@ -88,6 +93,7 @@ export default function EmployeeDetails() {
 
                 console.log('Assigned assets found:', assigned);
                 setAssignedAssets(assigned);
+
             } catch (error) {
                 console.error('Error fetching assets:', error);
             } finally {
@@ -139,23 +145,20 @@ export default function EmployeeDetails() {
             const employeeIdentifier = `${employee.name} (${employee.employeeId})`;
             console.log('Assigning to:', employeeIdentifier);
 
-            const newHistoryEntry = JSON.stringify({
-                historyId: ID.unique(),
-                employeeId: employee.employeeId,
-                assignDate: new Date().toISOString(),
+            // Create standardized history entries
+            const assetHistoryEntry = JSON.stringify({
+                updation: `Assigned to Employee (${employeeIdentifier})`,
+                date: new Date().toISOString(),
             });
 
-            const currentHistory = selectedAssetData.historyQueue || [];
-            const updatedHistory = [newHistoryEntry, ...currentHistory];
-            if (updatedHistory.length > 5) {
-                updatedHistory.pop();
-            }
-
-            console.log('Updating asset with:', {
-                status: 'Assigned',
-                assignedTo: employeeIdentifier,
-                historyQueue: updatedHistory
+            const employeeHistoryEntry = JSON.stringify({
+                updation: `Asset (${selectedAssetData.assetName}) assigned to this employee`,
+                date: new Date().toISOString(),
             });
+
+            // Update Asset History
+            const currentAssetHistory = selectedAssetData.historyQueue || [];
+            const updatedAssetHistory = [assetHistoryEntry, ...currentAssetHistory].slice(0, 15);
 
             await databases.updateDocument(
                 'assetManagement',
@@ -164,7 +167,7 @@ export default function EmployeeDetails() {
                 {
                     status: 'Assigned',
                     assignedTo: employeeIdentifier,
-                    historyQueue: updatedHistory
+                    historyQueue: updatedAssetHistory
                 }
             );
 
@@ -203,6 +206,17 @@ export default function EmployeeDetails() {
                 throw new Error('Asset not found in assigned assets');
             }
 
+            const employeeIdentifier = `${employee.name} (${employee.employeeId})`;
+
+            const assetHistoryEntry = JSON.stringify({
+                updation: "Available to assign (Unassigned)",
+                date: new Date().toISOString(),
+            });
+
+            const assetDoc = await databases.getDocument('assetManagement', 'assets', assetId);
+            const currentAssetHistory = assetDoc.historyQueue || [];
+            const updatedAssetHistory = [assetHistoryEntry, ...currentAssetHistory].slice(0, 15);
+
             await databases.updateDocument(
                 'assetManagement',
                 'assets',
@@ -210,8 +224,9 @@ export default function EmployeeDetails() {
                 {
                     status: 'Available',
                     assignedTo: 'unassigned',
+                    historyQueue: updatedAssetHistory
                 }
-            );
+            )
 
             setAssignedAssets(prev => prev.filter(a => a.id !== assetId));
 

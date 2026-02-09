@@ -78,7 +78,7 @@ export default function AssetDetails() {
                 }
 
                 return {
-                  updation: parsedEntry.updation || "N/A",
+                  updation: parsedEntry.updation,
                   date: parsedEntry.date || new Date().toISOString()
                 };
               } catch (e) {
@@ -292,6 +292,8 @@ export default function AssetDetails() {
 
       const updatedHistory = [newHistoryEntry, ...currentHistory];
       if (updatedHistory.length > 15) updatedHistory.pop();
+
+      const previousAssignee = asset.assignedTo;
 
       await databases.updateDocument('assetManagement', 'assets', asset.docId, {
         assignedTo: null,
