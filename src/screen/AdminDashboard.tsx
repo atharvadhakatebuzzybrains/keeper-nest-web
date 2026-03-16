@@ -22,6 +22,7 @@ import {
   UserCircle,
   Package2,
   PackageOpen,
+  CalendarMinus,
 } from "lucide-react";
 import "../styles/adminDashboardStyles.css";
 import Navbar from "../components/Navbar";
@@ -111,6 +112,13 @@ export default function AdminDashboard() {
       description: "Manage team members",
       href: "/employees",
     },
+    {
+      title: "Leave Management",
+      icon: CalendarMinus,
+      color: "bg-indigo-500",
+      description: "Manage leave applications",
+      href: "/leaveManagement",
+    }
   ];
 
   useEffect(() => {

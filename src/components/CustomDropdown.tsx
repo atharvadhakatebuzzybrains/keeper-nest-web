@@ -15,6 +15,7 @@ interface CustomDropdownProps {
   searchPlaceholder?: string;
   className?: string;
   disabled?: boolean;
+  isSearchable?: boolean;
 }
 
 export default function CustomDropdown({
@@ -24,7 +25,8 @@ export default function CustomDropdown({
   placeholder = 'Select an option',
   searchPlaceholder = 'Search...',
   className = '',
-  disabled = false
+  disabled = false,
+  isSearchable = true
 }: CustomDropdownProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
@@ -106,7 +108,7 @@ export default function CustomDropdown({
 
   return (
     <div className={`relative ${className}`} ref={dropdownRef}>
-     <button
+      <button
         type="button"
         onClick={() => !disabled && setIsOpen(!isOpen)}
         onKeyDown={handleKeyDown}
@@ -118,8 +120,8 @@ export default function CustomDropdown({
           ${disabled
             ? 'bg-gray-50 text-gray-400 border-gray-200 cursor-not-allowed'
             : isOpen
-            ? 'border-blue-500 ring-2 ring-blue-100'
-            : 'border-gray-300 hover:border-gray-400 focus:border-blue-500'
+              ? 'border-blue-500 ring-2 ring-blue-100'
+              : 'border-gray-300 hover:border-gray-400 focus:border-blue-500'
           }
           ${selectedOption ? 'text-gray-900' : 'text-gray-500'}
         `}
@@ -152,37 +154,37 @@ export default function CustomDropdown({
           )}
         </div>
         <ChevronDown
-          className={`h-4 w-4 text-gray-400 transition-transform duration-200 ${
-            isOpen ? 'rotate-180' : ''
-          }`}
+          className={`h-4 w-4 text-gray-400 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''
+            }`}
         />
       </button>
 
-      {/* Dropdown Menu */}
       {isOpen && !disabled && (
         <div
           className="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg
           overflow-hidden max-h-80 animate-in fade-in-0 zoom-in-95"
           role="listbox"
         >
-          <div className="p-2 border-b border-gray-100 sticky top-0 bg-white">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-              <input
-                ref={searchRef}
-                type="text"
-                value={searchTerm}
-                onChange={(e) => {
-                  setSearchTerm(e.target.value);
-                  setHighlightedIndex(0);
-                }}
-                placeholder={searchPlaceholder}
-                className="w-full pl-9 pr-3 py-2 text-sm border border-gray-300 rounded-md
+          {isSearchable && (
+            <div className="p-2 border-b border-gray-100 sticky top-0 bg-white">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                <input
+                  ref={searchRef}
+                  type="text"
+                  value={searchTerm}
+                  onChange={(e) => {
+                    setSearchTerm(e.target.value);
+                    setHighlightedIndex(0);
+                  }}
+                  placeholder={searchPlaceholder}
+                  className="w-full pl-9 pr-3 py-2 text-sm border border-gray-300 rounded-md
                 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                onClick={(e) => e.stopPropagation()}
-              />
+                  onClick={(e) => e.stopPropagation()}
+                />
+              </div>
             </div>
-          </div>
+          )}
 
           <div className="overflow-y-auto max-h-64 py-1">
             {filteredOptions.length > 0 ? (
@@ -229,10 +231,7 @@ export default function CustomDropdown({
             )}
           </div>
 
-          <div className="px-3 py-2 border-t border-gray-100 bg-gray-50 text-xs text-gray-500">
-            {filteredOptions.length} of {options.length} options
-            {searchTerm && ` • Searching: "${searchTerm}"`}
-          </div>
+        
         </div>
       )}
     </div>

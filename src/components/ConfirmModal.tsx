@@ -131,13 +131,6 @@ export const ConfirmModal: React.FC<ConfirmModalProps> = ({
             )}
           </button>
         </div>
-
-        {isDangerous && (
-          <div className="px-6 py-3 bg-red-50 border-t border-red-100 text-xs text-red-600 font-medium flex items-start gap-2">
-            <AlertTriangle size={14} className="flex-shrink-0 mt-0.5" />
-            <span>This action cannot be undone.</span>
-          </div>
-        )}
       </div>
     </div>
   );

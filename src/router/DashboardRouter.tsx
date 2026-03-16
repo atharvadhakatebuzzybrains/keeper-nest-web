@@ -15,6 +15,9 @@ import ViewAssets from '../components/adminComponents/ViewAssets';
 import AssetDetails from '../components/adminComponents/AssetDetails';
 import EmployeeAssetDetails from '../components/employeeComponents/EmployeeAssetDetails';
 import EmployeeDetails from '../components/adminComponents/EmployeeDetails';
+import LeaveForm from '../components/employeeComponents/Leave/LeaveForm';
+import LeaveLogs from '../components/employeeComponents/Leave/LeaveLogs';
+import LeaveManagement from '../components/adminComponents/Leave/LeaveManagement';
 
 
 export default function DashboardRouter() {
@@ -84,6 +87,7 @@ export default function DashboardRouter() {
                     <Route path='viewAssets' element={<ViewAssets/>} />
                     <Route path='employees' element={<EmployeeList/>} />
                     <Route path='viewAssets/assetDetails/:assetId' element={<AssetDetails/>} />
+                    <Route path="leaveManagement" element={<LeaveManagement />} />
                     <Route path='employees/employeeDetails/:employeeId' element={<EmployeeDetails />} />
                     <Route path="*" element={<NotFound />} />
                 </>
@@ -92,6 +96,8 @@ export default function DashboardRouter() {
                     <Route path='/' element={<EmployeeDashboard />} />
                     <Route path='assetDetails/:id' element={<EmployeeAssetDetails />} />
                     <Route path="profile" element={<Profile />} />
+                    <Route path="leaveForm" element={<LeaveForm />} />
+                    <Route path="leaveForm/leaveLogs" element={<LeaveLogs />} />
                     <Route path="*" element={<NotFound />} />
                 </>
             ) : (
